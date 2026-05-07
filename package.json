@@ -1,0 +1,13 @@
+{
+  "name": "costpilot",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.33.2",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  }
+}
