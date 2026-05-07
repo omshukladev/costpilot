@@ -1,54 +1,54 @@
-# ORM Rules
+# ORM / Database Rules
 
-## ORM Stack
+## Database Stack
 
-- Drizzle ORM
 - Cloudflare D1
+- Raw SQL
 
 ---
 
-# ORM Philosophy
+## Database Philosophy
 
-Use Drizzle as a lightweight type-safe ORM layer.
+Use raw SQL for database access. No ORM layer.
 
 Prioritize:
-- readable schema definitions
-- typed queries
-- predictable migrations
-- maintainable database access
+- readable SQL queries
+- explicit schema management
+- straightforward database access
 
 Avoid:
-- unnecessary query abstraction
-- deeply nested ORM wrappers
-- overengineered repositories
+- ORM abstraction layers
+- hidden query generation
+- unnecessary complexity
 
 ---
 
-# Schema Rules
+## Schema Rules
 
-- Keep schema centralized
-- Use descriptive naming
+- Keep DDL in a single `schema.sql` file
+- Use descriptive table and column names
 - Keep tables minimal
-- Prefer explicit column definitions
+- Run schema against D1 via `wrangler d1 execute`
 
 ---
 
-# Query Rules
+## Query Rules
 
+- Write explicit SQL queries
+- Use prepared statements for user input
 - Keep queries readable
-- Prefer straightforward database access
-- Avoid hiding business logic inside ORM utilities
+- Avoid hiding business logic inside query helpers
 
 ---
 
-# Migration Rules
+## Migration Rules
 
-- Use migration-based schema updates
+- Use `wrangler d1 migrations` for schema changes
 - Keep migrations small and descriptive
 - Never manually mutate production schema
 
 ---
 
-# Important Principle
+## Important Principle
 
-The ORM should simplify development, not hide database behavior.
+Raw SQL keeps database behavior visible and predictable.

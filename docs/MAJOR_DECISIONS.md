@@ -59,3 +59,20 @@ Reason:
 
 Tradeoff:
 - Slightly more setup complexity compared to raw SQL
+
+---
+
+## Switched to Raw SQL
+
+Decision:
+- Use raw SQL instead of Drizzle ORM
+
+Reason:
+- Simpler setup with D1
+- Fewer dependencies
+- More transparent query behavior
+- Faster iteration for MVP
+
+Tradeoff:
+- Lose type-safe query building
+- Manual schema management

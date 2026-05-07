@@ -1,43 +1,42 @@
 # Database Schema
 
-## Planned Tables
+## Stack
 
-## ORM
-
-Database access uses:
-- Drizzle ORM
 - Cloudflare D1
+- Raw SQL
 
-Schema definitions and migrations should remain type-safe and centralized.
+---
+
+## Tables
 
 ### audits
 
 Stores audit results and public report information.
 
-Planned fields:
-- id
-- public_id
-- tools_json
-- recommendations_json
-- monthly_savings
-- yearly_savings
-- summary
-- created_at
-
----
+| Column | Type | Notes |
+|--------|------|-------|
+| id | TEXT | Primary key, generated via nanoid |
+| public_id | TEXT | Unique, short ID for shareable URLs |
+| tools_json | TEXT | JSON array of tool entries |
+| recommendations_json | TEXT | JSON array of recommendations |
+| monthly_savings | REAL | Total monthly savings |
+| yearly_savings | REAL | Total yearly savings |
+| summary | TEXT | AI-generated summary paragraph |
+| created_at | TEXT | ISO 8601 timestamp |
 
 ### leads
 
 Stores optional lead capture information.
 
-Planned fields:
-- id
-- email
-- company_name
-- role
-- team_size
-- audit_id
-- created_at
+| Column | Type | Notes |
+|--------|------|-------|
+| id | TEXT | Primary key, generated via nanoid |
+| email | TEXT | User email (required) |
+| company_name | TEXT | Optional |
+| role | TEXT | Optional |
+| team_size | INTEGER | Optional |
+| audit_id | TEXT | Foreign key to audits.id |
+| created_at | TEXT | ISO 8601 timestamp |
 
 ---
 
@@ -46,3 +45,4 @@ Planned fields:
 - Public reports must never expose sensitive lead information
 - Separate public report data from lead capture data
 - Keep schema minimal and focused
+- Use raw SQL — no ORM

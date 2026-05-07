@@ -4,8 +4,7 @@
 
 - Cloudflare Workers
 - Hono
-- D1
-- Raw SQL
+- D1 (raw SQL)
 - Zod
 - Vitest
 - Resend
@@ -31,7 +30,9 @@ Avoid:
 
 Use:
 
-txt routes   → controllers     → services       → database 
+```
+routes  →  services  →  database
+```
 
 Controllers should remain thin.
 
@@ -51,16 +52,14 @@ Never trust frontend validation alone.
 # Database Rules
 
 Use:
-- Drizzle ORM
-- organized schema definitions
-- typed database queries
-- migration-based schema management
+- raw SQL with D1
+- prepared statements for user input
+- explicit schema via `schema.sql`
 
 Avoid:
+- ORM layers
 - database logic inside controllers
 - untyped queries
-- duplicated schema definitions
-- unnecessary query abstraction layers
 
 ---
 

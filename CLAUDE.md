@@ -83,8 +83,7 @@ Avoid:
 ## Backend
 - Cloudflare Workers
 - Hono
-- D1
-- Drizzle ORM
+- D1 (raw SQL)
 - Zod
 - Vitest
 - Resend
