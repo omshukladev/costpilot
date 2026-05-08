@@ -79,3 +79,28 @@ Update this file after major development sessions.
 - Create `db.ts` with raw SQL helper queries
 - Build the audit engine service with tests
 - Create POST /audit route with validation
+
+---
+
+## 2026-05-08
+
+### Completed
+- Recreated shared types package (`packages/shared`) with ToolId, AuditInput, Recommendation, AuditResult types
+- Built audit engine controller (`controllers/audit-engine.ts`) — deterministic pricing logic for all 8 tools
+- Wrote 8 tests for audit engine covering: downgrade detection, credit optimization, already-optimal, multi-tool totals, all 8 tools, timestamps
+- All 10 tests passing (2 route + 8 engine)
+- Documented error in docs/MAJOR_ERRORS.md
+
+### Decisions
+- **Audit engine is pure logic**: No DB access, no API calls, fully deterministic — testable without Workers runtime
+- **Price thresholds**: Credex credit optimization triggers at $200+/month API spend; plan downgrade logic uses team size as primary signal
+
+### Problems Encountered
+- None with the audit engine itself — pure logic tests passed first time
+
+### Next Steps
+- Create `controllers/db.ts` with raw SQL queries (insert audit, insert lead, get report)
+- Create `routes/audit.ts` with Zod validation
+- Create summary controller (Gemini + fallback)
+- Create `routes/lead.ts` and `routes/report.ts`
+- Update `src/index.ts` to wire all routes
