@@ -49,3 +49,23 @@ Reverted the test migration setup for now. Audit engine tests are pure logic (no
 ### Lesson
 
 Keep tests that don't need the database completely separate from DB integration tests. The audit engine is pure logic — test it without any Workers runtime setup.
+
+---
+
+## CI: Vitest Remote D1 Connection Fails
+
+### Error
+
+GitHub Actions CI failed with:
+```
+Error: Failed to start the remote proxy session...
+You must be logged in to use wrangler dev in remote mode.
+```
+
+### Root Cause
+
+The D1 binding in `wrangler.jsonc` had `"remote": true`, which tells the vitest pool to connect to the remote Cloudflare D1 database. In CI, there's no Cloudflare authentication, so the connection fails.
+
+### Fix
+
+Added `remoteBindings: false` to `vitest.config.ts` under `poolOptions.workers`. This tells the vitest pool to use local storage instead of trying to connect to remote resources.
