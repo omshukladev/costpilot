@@ -4,54 +4,45 @@ import { runAudit } from "./audit-engine";
 import { generateSummary } from "./summary";
 import { insertAudit } from "../db/queries";
 
-interface AuditResult {
-  id: string;
-  publicId: string;
-  input: AuditInput;
-  recommendations: unknown[];
-  totalMonthlySavings: number;
-  totalYearlySavings: number;
-  summary: string;
-  createdAt: string;
-}
+export async function create(c: any) {
+  try {
+    const input = c.req.valid("json") as AuditInput;
+    const result = runAudit(input);
 
-export async function create(
-  db: D1Database,
-  geminiApiKey: string | undefined,
-  input: AuditInput
-): Promise<AuditResult> {
-  const result = runAudit(input);
+    const id = nanoid();
+    const publicId = nanoid(12);
 
-  const id = nanoid();
-  const publicId = nanoid(12);
+    const summary = await generateSummary(
+      c.env.GEMINI_API_KEY,
+      input,
+      result.recommendations,
+      result.totalMonthlySavings,
+      result.totalYearlySavings
+    );
 
-  const summary = await generateSummary(
-    geminiApiKey,
-    input,
-    result.recommendations,
-    result.totalMonthlySavings,
-    result.totalYearlySavings
-  );
+    await insertAudit(c.env.costpilot_db, {
+      id,
+      publicId,
+      input,
+      recommendations: result.recommendations,
+      monthlySavings: result.totalMonthlySavings,
+      yearlySavings: result.totalYearlySavings,
+      summary,
+      createdAt: result.createdAt,
+    });
 
-  await insertAudit(db, {
-    id,
-    publicId,
-    input,
-    recommendations: result.recommendations,
-    monthlySavings: result.totalMonthlySavings,
-    yearlySavings: result.totalYearlySavings,
-    summary,
-    createdAt: result.createdAt,
-  });
-
-  return {
-    id,
-    publicId,
-    input,
-    recommendations: result.recommendations,
-    totalMonthlySavings: result.totalMonthlySavings,
-    totalYearlySavings: result.totalYearlySavings,
-    summary,
-    createdAt: result.createdAt,
-  };
+    return c.json({
+      id,
+      publicId,
+      input,
+      recommendations: result.recommendations,
+      totalMonthlySavings: result.totalMonthlySavings,
+      totalYearlySavings: result.totalYearlySavings,
+      summary,
+      createdAt: result.createdAt,
+    });
+  } catch (err) {
+    console.error("Audit error:", err);
+    return c.json({ error: "Failed to process audit" }, 500);
+  }
 }

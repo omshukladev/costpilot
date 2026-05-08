@@ -13,8 +13,5 @@ If package.json dependencies are updated without regenerating `pnpm-lock.yaml`, 
 ## Empty Root Docs
 
 Several assignment-required root docs are still empty and need to be filled before submission:
-- ARCHITECTURE.md
-- README.md
 - REFLECTION.md
-- PROMPTS.md
 - GTM.md, ECONOMICS.md, USER_INTERVIEWS.md, LANDING_COPY.md, METRICS.md

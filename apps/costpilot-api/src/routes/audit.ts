@@ -1,8 +1,6 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import type { AuditInput } from "@costpilot/shared";
-import type { Env } from "../index";
 import * as Audit from "../controllers/audit";
 
 const auditInputSchema = z.object({
@@ -29,17 +27,8 @@ const auditInputSchema = z.object({
   useCase: z.enum(["coding", "writing", "data", "research", "mixed"]),
 });
 
-const auditRoute = new Hono<{ Bindings: Env }>();
+const auditRoute = new Hono();
 
-auditRoute.post("/", zValidator("json", auditInputSchema), async (c) => {
-  try {
-    const input = c.req.valid("json") as unknown as AuditInput;
-    const result = await Audit.create(c.env.costpilot_db, c.env.GEMINI_API_KEY, input);
-    return c.json(result);
-  } catch (err) {
-    console.error("Audit error:", err);
-    return c.json({ error: "Failed to process audit" }, 500);
-  }
-});
+auditRoute.post("/", zValidator("json", auditInputSchema), Audit.create);
 
 export { auditRoute };
