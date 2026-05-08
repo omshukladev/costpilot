@@ -107,11 +107,17 @@ Update this file after major development sessions.
 - Created `docs/KNOWN_ISSUES.md` (was missing, referenced by CLAUDE.md)
 - Created `ARCHITECTURE.md` with Mermaid system diagram + data flow + scaling notes
 - Created `README.md` with summary, quick start, deployment URLs, decisions
-- Created `PROMPTS.md` with AI summary prompt template + fallback + design notes
-- Refactored `routes/audit.ts` to be thin route → controller pattern (routes/controllers separation)
+
+### Completed (summary + tests)
+- Built `controllers/summary.ts` — Gemini 2.0 Flash with templated fallback
+- Installed `@google/generative-ai` package
+- Added `GEMINI_API_KEY` to wrangler.jsonc vars + .dev.vars for local dev
+- Updated `controllers/audit.ts` to call `generateSummary` and include summary in response
+- Wrote 5 tests for summary fallback covering: undefined key, empty key, savings vs no savings, tool count
+- All 15 tests passing (2 route + 8 engine + 5 summary)
+- Updated TESTS.md, PROMPTS.md with actual prompt implementation
 
 ### Next Steps
-- Build `controllers/summary.ts` (Gemini + fallback)
 - Create `routes/lead.ts` and `routes/report.ts`
 - Wire all routes in `src/index.ts`
 - Start frontend (homepage + audit form)

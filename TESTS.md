@@ -33,3 +33,12 @@ Audit engine tests (8 tests):
 - `handles all 8 tools without crashing` — all tools produce valid recommendations
 - `returns zero savings for already-optimal setups` — no manufactured savings
 - `generates ISO timestamp in createdAt` — date format verification
+
+### `apps/costpilot-api/src/__tests__/summary.test.ts`
+
+Summary fallback tests (5 tests):
+- `returns fallback when apiKey is undefined` — graceful degradation
+- `returns fallback when apiKey is empty` — handles empty string key
+- `fallback mentions savings when there are savings` — includes dollar amounts + Credex mention
+- `fallback says optimized when no savings` — no fabricated savings
+- `fallback includes tool count` — dynamic content based on input
