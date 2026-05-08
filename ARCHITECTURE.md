@@ -25,7 +25,8 @@ costpilot/
 │   │   │   ├── db/                     # ONLY raw SQL queries. NO logic.
 │   │   │   │   └── queries.ts          #   insertAudit, getAuditByPublicId, insertLead
 │   │   │   │
-│   │   │   ├── middleware/             # Hono middleware (auth, rate-limit, etc.)
+│   │   │   ├── middleware/             # Hono middleware
+│   │   │   │   └── rate-limit.ts       #   In-memory rate limiter (10 req/min)
 │   │   │   │
 │   │   │   ├── utils/                  # Shared helpers
 │   │   │   │

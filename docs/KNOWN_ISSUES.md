@@ -13,5 +13,10 @@ If package.json dependencies are updated without regenerating `pnpm-lock.yaml`, 
 ## Empty Root Docs
 
 Several assignment-required root docs are still empty and need to be filled before submission:
+
 - REFLECTION.md
 - GTM.md, ECONOMICS.md, USER_INTERVIEWS.md, LANDING_COPY.md, METRICS.md
+
+## Email Deliverability Variance
+
+Resend dashboard status does not guarantee Gmail inbox placement. If the sender domain is verified but mail still does not arrive in Gmail, check Gmail spam/promotions and confirm SPF, DKIM, and DMARC are aligned for the sender domain.

@@ -1,26 +1,28 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "costpilot-api",
-	"main": "src/index.ts",
-	"compatibility_date": "2026-03-10",
-	"assets": {
-		"binding": "ASSETS",
-		"directory": "./public"
-	},
-	"observability": {
-		"enabled": true
-	},
-	"upload_source_maps": true,
-	"compatibility_flags": ["nodejs_compat"],
-	"vars": {
-		"GEMINI_API_KEY": ""
-	},
-	"d1_databases": [
-		{
-			"binding": "costpilot_db",
-			"database_name": "costpilot-db",
-			"database_id": "da7cc4df-13ae-4aa3-9b21-25402d2510a4",
-			"remote": true
-		}
-	]
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "costpilot-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-03-10",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./public",
+  },
+  "observability": {
+    "enabled": true,
+  },
+  "upload_source_maps": true,
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "GEMINI_API_KEY": "",
+    "RESEND_FROM_EMAIL": "",
+    "RESEND_FROM_NAME": "CostPilot",
+  },
+  "d1_databases": [
+    {
+      "binding": "costpilot_db",
+      "database_name": "costpilot-db",
+      "database_id": "da7cc4df-13ae-4aa3-9b21-25402d2510a4",
+      "remote": true,
+    },
+  ],
 }
