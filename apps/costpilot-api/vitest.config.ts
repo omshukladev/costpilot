@@ -5,8 +5,11 @@ import {
 export default defineWorkersConfig({
   test: {
     pool: "@cloudflare/vitest-pool-workers",
-    wrangler: { configPath: "./wrangler.jsonc" },
+    poolOptions: {
+      workers: {
+        wrangler: { configPath: "./wrangler.jsonc" },
+      },
+    },
     globals: true,
   },
 });
-

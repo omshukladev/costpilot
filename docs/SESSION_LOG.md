@@ -89,7 +89,11 @@ Update this file after major development sessions.
 - Built audit engine controller (`controllers/audit-engine.ts`) — deterministic pricing logic for all 8 tools
 - Wrote 8 tests for audit engine covering: downgrade detection, credit optimization, already-optimal, multi-tool totals, all 8 tools, timestamps
 - All 10 tests passing (2 route + 8 engine)
-- Documented error in docs/MAJOR_ERRORS.md
+- Documented Vercel lockfile error in docs/MAJOR_ERRORS.md
+- Created PRICING_DATA.md with current pricing sources for all 8 tools (verified 2026-05-08)
+- Created CI workflow `.github/workflows/ci.yml` — runs tests on push to main
+- Created SUMMARY.md (local reference, gitignored)
+- Added SUMMARY.md to .gitignore
 
 ### Decisions
 - **Audit engine is pure logic**: No DB access, no API calls, fully deterministic — testable without Workers runtime
@@ -98,9 +102,18 @@ Update this file after major development sessions.
 ### Problems Encountered
 - None with the audit engine itself — pure logic tests passed first time
 
+### Completed (docs catch-up)
+- Updated `docs/API_CONTRACTS.md` with actual POST /audit implementation details
+- Created `docs/KNOWN_ISSUES.md` (was missing, referenced by CLAUDE.md)
+- Created `ARCHITECTURE.md` with Mermaid system diagram + data flow + scaling notes
+- Created `README.md` with summary, quick start, deployment URLs, decisions
+- Created `PROMPTS.md` with AI summary prompt template + fallback + design notes
+- Refactored `routes/audit.ts` to be thin route → controller pattern (routes/controllers separation)
+
 ### Next Steps
-- Create `controllers/db.ts` with raw SQL queries (insert audit, insert lead, get report)
-- Create `routes/audit.ts` with Zod validation
-- Create summary controller (Gemini + fallback)
+- Build `controllers/summary.ts` (Gemini + fallback)
 - Create `routes/lead.ts` and `routes/report.ts`
+- Wire all routes in `src/index.ts`
+- Start frontend (homepage + audit form)
+- **Needs your input**: REFLECTION.md, USER_INTERVIEWS.md, GTM.md, ECONOMICS.md, LANDING_COPY.md, METRICS.md
 - Update `src/index.ts` to wire all routes

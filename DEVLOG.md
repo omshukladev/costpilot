@@ -49,6 +49,10 @@
 - Wrote 8 tests for audit engine covering downgrade, credit optimization, already-optimal cases
 - All 10 tests passing (2 route + 8 engine)
 - Documented Vercel lockfile error in docs/MAJOR_ERRORS.md
+- Created PRICING_DATA.md with current pricing sources for all 8 tools (verified 2026-05-08)
+- Created CI workflow `.github/workflows/ci.yml` — runs tests on push to main
+- Created SUMMARY.md (local reference, gitignored)
+- Added SUMMARY.md to .gitignore
 
 **What I learned:**
 - Vitest with Cloudflare pool workers requires specific config (defineWorkersConfig, globals: true)
