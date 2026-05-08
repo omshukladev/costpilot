@@ -34,7 +34,7 @@ const auditRoute = new Hono<{ Bindings: Env }>();
 auditRoute.post("/", zValidator("json", auditInputSchema), async (c) => {
   try {
     const input = c.req.valid("json") as unknown as AuditInput;
-    const result = await Audit.create(c.env.costpilot_db, input);
+    const result = await Audit.create(c.env.costpilot_db, c.env.GEMINI_API_KEY, input);
     return c.json(result);
   } catch (err) {
     console.error("Audit error:", err);

@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import type { AuditInput } from "@costpilot/shared";
 import { runAudit } from "./audit-engine";
+import { generateSummary } from "./summary";
 import { insertAudit } from "../db/queries";
 
 interface AuditResult {
@@ -16,12 +17,21 @@ interface AuditResult {
 
 export async function create(
   db: D1Database,
+  geminiApiKey: string | undefined,
   input: AuditInput
 ): Promise<AuditResult> {
   const result = runAudit(input);
 
   const id = nanoid();
   const publicId = nanoid(12);
+
+  const summary = await generateSummary(
+    geminiApiKey,
+    input,
+    result.recommendations,
+    result.totalMonthlySavings,
+    result.totalYearlySavings
+  );
 
   await insertAudit(db, {
     id,
@@ -30,7 +40,7 @@ export async function create(
     recommendations: result.recommendations,
     monthlySavings: result.totalMonthlySavings,
     yearlySavings: result.totalYearlySavings,
-    summary: "",
+    summary,
     createdAt: result.createdAt,
   });
 
@@ -41,7 +51,7 @@ export async function create(
     recommendations: result.recommendations,
     totalMonthlySavings: result.totalMonthlySavings,
     totalYearlySavings: result.totalYearlySavings,
-    summary: "",
+    summary,
     createdAt: result.createdAt,
   };
 }

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@costpilot/shared": "workspace:*",
+    "@google/generative-ai": "^0.24.1",
     "@hono/zod-validator": "^0.4.0",
     "hono": "^4.12.18",
     "nanoid": "^5.1.0",
