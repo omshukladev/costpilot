@@ -274,3 +274,64 @@ Update this file after major development sessions.
 
 - Start frontend (homepage + audit form)
 - **Needs your input**: REFLECTION.md, USER_INTERVIEWS.md, GTM.md, ECONOMICS.md, LANDING_COPY.md, METRICS.md
+
+### Completed (frontend landing redesign)
+
+- Reworked landing page for assignment alignment and stronger startup-grade polish
+- Updated hero messaging and CTAs to emphasize value-first flow (no login before results)
+- Added tool coverage section for all required AI tools in assignment scope
+- Added audit starter section to preview expected inputs (plans, seats, spend, use-case, team size)
+- Updated live demo section to show defensible recommendation style and realistic savings framing
+- Improved “How it works” copy to reflect deterministic rules and privacy-safe report sharing
+- Added FAQ section with assignment-relevant trust answers
+- Fixed frontend TypeScript blocker by extending `FloatingElement` with `style` prop and removing unused ref
+- Updated `LANDING_COPY.md` with headline, subheadline, CTA, social proof placeholder, and 5 FAQs
+
+### Decisions
+
+- Kept the aesthetic dark/cinematic while reducing fluff and increasing trust/clarity in copy
+- Prioritized assignment-fit messaging over decorative-only sections
+
+### Next Steps
+
+- Build full `/audit` route with functional persisted form and API integration
+- Connect landing CTA directly into complete audit flow
+
+---
+
+## 2026-05-09 (Premium Art Direction Pass)
+
+### Completed
+
+- **Premium SaaS Aesthetic Overhaul**: Shifted landing page from "AI-generated" look to a refined, art-directed experience inspired by Linear, Vercel, and Digital Heroes.
+- **Background Beams with Collision**: Implemented a custom, high-performance animation component for the "Integrations" section with vertical beams that "explode" into emerald particles.
+- **Hardware-Accelerated Motion**: Rewrote the `Spotlight` component using `requestAnimationFrame` and linear interpolation (`lerp`) for silky-smooth, lag-free cursor tracking.
+- **Visual Rhythm & Asymmetry**: 
+    - Broke repetitive layouts with intentional asymmetry and overlapping mockups.
+    - Redesigned `LiveDemo` as an immersive product showcase with a realistic "Defensible Report" UI.
+    - Redesigned `HowItWorks` with descriptive, data-driven Step Visuals replacing placeholder bars.
+- **Human Art Direction**: 
+    - Reduced ambient glow usage by ~40% for a more restrained, professional atmosphere.
+    - Added magnetic interactions to the Navbar logo and primary CTA buttons.
+    - Standardized typography tracking, line-heights, and font-weight rhythms.
+    - Stabilized background to pure black (`#000000`) for maximum clarity and contrast.
+- **Technical Fixes**: Resolved critical import error by moving misplaced shadcn components and utilities from `@/` folder to `src/` to align with Vite/TypeScript alias configurations.
+- **Navigation Connectivity**: Added "Sample report" link and fixed all `id` anchors for seamless on-page navigation.
+
+### Decisions
+
+- **Restraint over Excess**: Chose subtle mesh gradients over heavy radial glows to communicate "Technical Sophistication" rather than "Gamer/Crypto" aesthetics.
+- **Pure Black vs. Tinted**: Reverted "muddy" green-black background to pure black to ensure razor-sharp typography and high-end feel.
+- **Interactive Depth**: Used layered glass effects (`backdrop-blur-xl`) and inner shadows on cards to create a physical, premium feel.
+
+### Problems Encountered
+
+- **Alias Conflict**: Physical `@` folder in root conflicted with Vite's `@/*` path alias, causing build-time import resolution failures. Resolved by moving files to `src/` and deleting the physical `@` directory.
+- **Over-glow**: Initial designs had too much ambient lighting, making the UI feel "janky" and hard to read. Fixed via systematic reduction of radial gradients.
+
+### Next Steps
+
+- Transition to full functional `/audit` flow.
+- Implement the multi-step multi-tool input form with persistence.
+- Connect landing CTAs to the live audit engine.
+
