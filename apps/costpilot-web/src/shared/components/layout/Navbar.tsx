@@ -41,7 +41,7 @@ export function Navbar() {
             {[
               { label: "How it works", href: "/#how-it-works", id: "how-it-works" },
               { label: "Sample report", href: "/#live-demo", id: "live-demo" },
-              { label: "Start audit", href: "/#audit-starter", id: "audit-starter" },
+              { label: "Start audit", href: "/audit", id: "audit-starter" },
             ].map((item) => (
               <a
                 key={item.id}

@@ -335,3 +335,112 @@ Update this file after major development sessions.
 - Implement the multi-step multi-tool input form with persistence.
 - Connect landing CTAs to the live audit engine.
 
+---
+
+## 2026-05-10
+
+### Completed
+
+- **Audit Feature (full flow)**: Built the complete audit form → results → lead capture → share pipeline
+  - `features/audit/types/audit.types.ts` — Form types, plan/tool/useCase option maps for all 8 tools
+  - `features/audit/validation/audit.schema.ts` — Zod v4 schema matching backend validation
+  - `features/audit/store/audit.store.ts` — Zustand store with localStorage persistence (form state survives reload)
+  - `features/audit/api/audit.api.ts` — POST /audit call via shared axios instance
+  - `features/audit/hooks/useAudit.ts` — TanStack Query mutation with loading/error handling
+  - `features/audit/components/ToolRow.tsx` — Individual tool row (selector, plan dropdown, spend, seats, remove)
+  - `features/audit/components/AuditForm.tsx` — Full form with dynamic tool rows, team size, use case, submit button with emerald styling
+  - `features/audit/pages/AuditPage.tsx` — Single page: shows form, replaces with results after API response
+- **Results Feature**: Built results display and lead capture
+  - `features/results/components/ResultsView.tsx` — Savings hero with AnimatedCounter, recommendation cards with type badges (downgrade, credit-optimization, alternative-tool, plan-mismatch, already-optimal), AI summary section, share button (copies /report/:publicId URL)
+  - `features/results/components/LeadCapture.tsx` — Email + optional company/role form, success confirmation state, appears AFTER results are visible
+  - `features/results/api/lead.api.ts` — POST /lead call
+- **Report Feature**: Built public report page
+  - `features/report/api/report.api.ts` — GET /report/:publicId call
+  - `features/report/hooks/useReport.ts` — TanStack Query fetch with 5-min cache
+  - `features/report/pages/ReportPage.tsx` — Full public report with OG meta tags (og:title, og:description, twitter:card), same premium dark aesthetic, tools analyzed grid, CTA back to audit
+- **Shared Infrastructure**:
+  - `shared/services/api.ts` — Axios instance pointing to deployed API (`costpilot-api.omshuklalko3.workers.dev`)
+  - `shared/utils/formatCurrency.ts` — USD currency formatter
+- **Router**: Added `/audit` and `/report/:publicId` routes (standalone, no navbar — full-screen immersive)
+- **Landing page**: Updated all CTA links (Hero, CTASection, Navbar) to point to `/audit` instead of anchor scrolls
+- **Build**: TypeScript compiles clean, Vite build passes (614KB JS, 70KB CSS)
+- Added `@costpilot/shared` as workspace dependency in web package.json
+
+### Decisions
+
+- **Single-page audit flow**: Form and results share `/audit` route (form toggles to results after API response) rather than separate `/audit` and `/results/:id` routes. Avoids data-passing complexity since there's no GET /audit/:id endpoint. Cleaner UX.
+- **No Navbar on feature pages**: Audit and report pages are full-screen immersive (no RootLayout wrapper). Landing page keeps the navbar. Users use browser back button or the "New audit" reset button.
+- **Lead capture after results**: Follows assignment's "Email is captured _after_ value is shown, never before" rule. LeadCapture component initially hidden behind a subtle CTA button, expands inline on click.
+- **Zustand partial persistence**: Only form fields (tools, teamSize, useCase) persist to localStorage. Results and submission state are ephemeral (reset on "New audit").
+- **OG tags via JS**: Public report page sets meta tags dynamically via useEffect (document.title + og/twitter meta). Not ideal for crawlers that don't execute JS, but functional for Googlebot and modern crawlers. Would need SSR/edge functions for full OG support.
+
+### Problems Encountered
+
+- **Zod v4 API mismatch**: Zod v4 removed `required_error` parameter from `z.number()`. Switched to plain `z.number().min()` calls. Project uses Zod v4.4.3.
+- **Shared types not resolved**: `@costpilot/shared` was not listed as a web dependency. Added `"@costpilot/shared": "workspace:*"` to web package.json.
+- **AnyPlan type narrowing in selects**: Form `<select>` returns `string` but plan type is `AnyPlan` (union of string literals). Cast with `as any` in the onChange handler since the options are generated from PLANS_BY_TOOL map and always valid.
+
+### Next Steps
+
+- Fill 5 empty root docs: REFLECTION.md, GTM.md, ECONOMICS.md, USER_INTERVIEWS.md, METRICS.md
+- Complete DEVLOG.md Day 4-7 entries
+- Add screenshots/recording to README.md
+- Bonus: PDF export, Lighthouse score optimization
+
+### Completed (product UX premium redesign pass)
+
+- Redesigned `/audit` into an asymmetric split layout with a dominant left narrative rail and a floating right-side command-center form panel.
+- Upgraded `AuditForm` and `ToolRow` surfaces to a layered dark-glass terminal style with stronger input focus states, larger control sizing, and improved spacing cadence.
+- Rebuilt results experience (`ResultsView`) around emotional payoff and hierarchy:
+  - dramatic savings reveal hero
+  - optimization score + confidence + risk modules
+  - primary recommendation spotlight
+  - secondary opportunities grid
+  - informational insights section
+  - spend allocation bars and before/after spend comparison
+  - structured AI briefing block
+- Reworked public report page (`/report/:publicId`) into an executive-style intelligence report with stronger typographic hierarchy and presentation-grade sectioning.
+- Preserved existing architecture, routes, API contracts, and Zustand persistence flow while upgrading product UX quality.
+
+### Decisions
+
+- Kept motion restrained and hierarchy-driven (reveal, focus, depth) instead of decorative animation to maintain trust and executive tone.
+- Used one dominant focal point per screen and separated high-impact vs informational content to avoid equal-weight dashboard feel.
+
+### Problems Encountered
+
+- Existing repo lint blockers remain outside this redesign scope:
+  - `src/components/ui/button.tsx` fast-refresh export rule
+  - `src/shared/components/animations/BackgroundBeamsWithCollision.tsx` `Math.random()` purity rule
+
+### Next Steps
+
+- Tighten bundle size (results/report page code-splitting) after design freeze.
+- Resolve existing lint blockers in shared UI/animation utilities for fully green frontend lint.
+
+### Completed (results intelligence density pass)
+
+- Upgraded `ResultsView` with stronger executive hierarchy:
+  - Primary recommendation now includes larger impact metric and reasoning bullets
+  - Added overlap exposure diagnostics for multi-assistant tool stacks
+  - Added transformation flow blocks (current spend → overlap exposure → optimized spend)
+  - Added confidence + risk modules and stronger recommendation emphasis
+- Upgraded public `ReportPage` for investor/executive readability:
+  - Added generated timestamp metadata and stronger KPI hierarchy
+  - Added highlighted primary action card and sorted recommendations by impact
+  - Converted summary into concise AI analyst briefing bullets
+
+### Problems Encountered
+
+- Frontend lint still blocked by pre-existing unrelated issues in:
+  - `src/components/ui/button.tsx` (react-refresh export rule)
+  - `src/shared/components/animations/BackgroundBeamsWithCollision.tsx` (`Math.random()` purity rule)
+
+### Completed (audit input UX + result stability fix)
+
+- Improved numeric field editing ergonomics in audit form by auto-selecting value on focus for:
+  - team size
+  - monthly spend
+  - seats
+- This removes the “have to type 090” friction when replacing default/previous values.
+- Persisted the latest audit `result` in Zustand persistence so the preferred results view remains stable across refresh/re-hydration instead of unexpectedly reverting presentation context.

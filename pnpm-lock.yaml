@@ -47,6 +47,9 @@ importers:
 
   apps/costpilot-web:
     dependencies:
+      '@costpilot/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@fontsource-variable/geist':
         specifier: ^5.2.8
         version: 5.2.8

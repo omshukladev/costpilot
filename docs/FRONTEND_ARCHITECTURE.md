@@ -50,32 +50,95 @@ src/
 │
 ├── app/
 │   ├── providers/
+│   │   └── index.tsx               # QueryClient + Lenis smooth scroll
 │   ├── router/
+│   │   └── index.tsx               # BrowserRouter: /, /audit, /report/:publicId
 │   ├── layouts/
+│   │   └── RootLayout.tsx          # Navbar + Outlet + Footer (landing only)
 │   ├── styles/
 │   └── config/
 │
 ├── features/
-│   ├── audit/
-│   ├── reports/
-│   ├── landing/
-│   └── lead-capture/
+│   ├── audit/                      # Audit form + engine integration
+│   │   ├── api/
+│   │   │   └── audit.api.ts        # POST /audit
+│   │   ├── components/
+│   │   │   ├── AuditForm.tsx       # Multi-tool form, team size, use case
+│   │   │   └── ToolRow.tsx         # Single tool row (selector, plan, spend, seats)
+│   │   ├── hooks/
+│   │   │   └── useAudit.ts         # TanStack Query mutation
+│   │   ├── pages/
+│   │   │   └── AuditPage.tsx       # Form → results on same page
+│   │   ├── store/
+│   │   │   └── audit.store.ts      # Zustand with localStorage persistence
+│   │   ├── types/
+│   │   │   └── audit.types.ts      # Form types, plan/tool option maps
+│   │   ├── validation/
+│   │   │   └── audit.schema.ts     # Zod v4 validation
+│   │   └── index.ts                # Barrel: AuditPage, useAuditStore
+│   │
+│   ├── results/                    # Results display + lead capture
+│   │   ├── api/
+│   │   │   └── lead.api.ts         # POST /lead
+│   │   └── components/
+│   │       ├── ResultsView.tsx     # Savings hero, recommendations, summary, share
+│   │       └── LeadCapture.tsx     # Email/company/role form (shown after results)
+│   │
+│   ├── report/                     # Public shareable report
+│   │   ├── api/
+│   │   │   └── report.api.ts       # GET /report/:publicId
+│   │   ├── hooks/
+│   │   │   └── useReport.ts        # TanStack Query fetch
+│   │   ├── pages/
+│   │   │   └── ReportPage.tsx      # Public report with OG meta tags
+│   │   └── index.ts                # Barrel: ReportPage
+│   │
+│   └── landing/                    # Marketing landing page
+│       ├── components/
+│       │   ├── Hero.tsx
+│       │   ├── ToolCoverage.tsx
+│       │   ├── AuditStarter.tsx
+│       │   ├── LiveDemo.tsx
+│       │   ├── HowItWorks.tsx
+│       │   ├── FAQSection.tsx
+│       │   └── CTASection.tsx
+│       └── pages/
+│           └── LandingPage.tsx
 │
 ├── shared/
 │   ├── components/
 │   │   ├── ui/
 │   │   ├── layout/
+│   │   │   ├── Navbar.tsx          # Floating capsule nav
+│   │   │   └── Footer.tsx
 │   │   └── animations/
+│   │       ├── CursorSpotlight.tsx
+│   │       ├── FadeIn.tsx
+│   │       ├── AnimatedCounter.tsx
+│   │       ├── HoverGlowCard.tsx
+│   │       ├── Spotlight.tsx
+│   │       ├── ShootingStars.tsx
+│   │       ├── FloatingElement.tsx
+│   │       ├── AmbientGradient.tsx
+│   │       ├── StaggerContainer.tsx
+│   │       ├── BackgroundBeamsWithCollision.tsx
+│   │       ├── FloatingOrb.tsx
+│   │       ├── AnimatedBorder.tsx
+│   │       └── ParallaxLayer.tsx
 │   │
 │   ├── hooks/
 │   ├── utils/
+│   │   └── formatCurrency.ts       # USD currency formatting
 │   ├── lib/
+│   │   └── utils.ts                # cn() — clsx + tailwind-merge
 │   ├── services/
+│   │   └── api.ts                  # Axios instance (base URL, timeout)
 │   ├── constants/
 │   └── types/
 │
 ├── assets/
-├── main.tsx
+├── index.css                        # Tailwind v4 + Geist font + noise overlay + shadcn theme
+├── main.tsx                         # Root render: Providers → CursorSpotlight → noise → Router
 └── vite-env.d.ts
 ```
 
@@ -650,6 +713,56 @@ AI assistants must:
 When uncertain:
 - prefer simpler implementation
 - prefer consistency with repository patterns
+
+---
+
+# Routing Architecture
+
+## Route Layout Decision
+
+Two layout modes are used:
+
+| Route | Layout | Rationale |
+|-------|--------|-----------|
+| `/` | RootLayout (Navbar + Footer) | Marketing page — needs navigation |
+| `/audit` | Standalone (no wrapper) | Full-screen immersive product experience |
+| `/report/:publicId` | Standalone (no wrapper) | Clean shareable page, no nav clutter |
+
+Audit and report pages still receive the global `CursorSpotlight` and noise overlay from `main.tsx` at the root level.
+
+## Route Tree
+
+```
+/
+├── /              → LandingPage (RootLayout)
+/audit             → AuditPage (standalone)
+/report/:publicId  → ReportPage (standalone)
+```
+
+---
+
+# Current Feature Dependency Graph
+
+```
+features/landing/
+  └── imports from shared/components/animations/*
+
+features/audit/
+  ├── imports from shared/services/api
+  ├── imports from shared/utils/formatCurrency
+  └── imports from shared/components/animations/AnimatedCounter, FadeIn
+
+features/results/
+  ├── reads from features/audit/store/audit.store (result state)
+  ├── imports from shared/services/api
+  └── imports from shared/components/animations/AnimatedCounter
+
+features/report/
+  ├── imports from shared/services/api
+  └── imports from shared/utils/formatCurrency
+```
+
+No feature directly imports internal logic from another feature. The `results` feature reads from `audit/store` via Zustand (which is the intended shared state boundary).
 
 ---
 

@@ -125,7 +125,7 @@ export function Hero() {
               style={{ x: mouseXSpring, y: mouseYSpring }}
             >
               <Link
-                to="/#audit-starter"
+                to="/audit"
                 className="group relative inline-flex h-16 items-center justify-center overflow-hidden rounded-full bg-emerald-500 px-12 text-sm font-bold text-black transition-all hover:bg-emerald-400 shadow-[0_20px_40px_-10px_rgba(16,185,129,0.3)]"
               >
                 <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] group-hover:duration-700 group-hover:[transform:skew(-12deg)_translateX(100%)]">
