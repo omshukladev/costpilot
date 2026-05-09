@@ -101,3 +101,65 @@ Implemented stricter, finance-defensible gating for `alternative-tool` recommend
 ### Lesson
 
 For financial recommendation systems, "possible savings" is not enough. Suggestions should only appear when assumptions are explicit and savings clear enough to be defensible to a finance-literate reviewer.
+
+---
+
+## Vercel 404 on Page Reload (React Router SPA)
+
+### Error
+
+All routes (homepage, `/audit`, `/report/:id`) return 404 on page refresh, but work if navigated to from within the app. Loading succeeds after multiple retries.
+
+### Root Cause
+
+Vercel serves files statically. When you reload `/audit`, it looks for a file at that path, which doesn't exist — it's a React Router route. Vercel needs to serve `index.html` for all paths and let React handle the routing.
+
+### Fix
+
+Added `apps/costpilot-web/vercel.json`:
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+This tells Vercel to serve `index.html` for every URL path, so React Router can handle the routing client-side.
+
+---
+
+## Gemini Free Tier Quota Exceeded
+
+### Error
+
+```
+429 Too Many Requests — Quota exceeded for Gemini free tier
+```
+
+### Root Cause
+
+The free Gemini API key has strict per-minute and per-day limits. During testing, these limits were hit.
+
+### Fix
+
+The summary controller already handles this gracefully — `generateSummary()` catches API errors and returns a templated fallback. Users see the pre-written summary with their savings numbers instead of an AI-generated one.
+
+For a fresh key, create a new Google account and generate a key at aistudio.google.com.
+
+---
+
+## Email Not Including Report Link
+
+### Error
+
+Lead capture emails were sent without the report URL and mentioned Credex for all users regardless of savings amount.
+
+### Root Cause
+
+The lead controller wasn't looking up the audit data — it relied on the frontend to send `publicId` and `totalMonthlySavings`, but the frontend wasn't sending them.
+
+### Fix
+
+Updated `controllers/lead.ts` to look up the audit from D1 using `auditId`:
+- Gets `public_id` from DB to include the report link
+- Gets `monthly_savings` from DB — only mentions Credex if savings > $500/mo
+- Added `getAuditById()` to `db/queries.ts`

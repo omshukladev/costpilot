@@ -444,3 +444,11 @@ Update this file after major development sessions.
   - seats
 - This removes the “have to type 090” friction when replacing default/previous values.
 - Persisted the latest audit `result` in Zustand persistence so the preferred results view remains stable across refresh/re-hydration instead of unexpectedly reverting presentation context.
+
+### Completed (Vercel SPA route fix)
+
+- Added root `vercel.json` for monorepo deployment with:
+  - `pnpm --filter costpilot-web build`
+  - output directory `apps/costpilot-web/dist`
+  - SPA rewrite `/(.*) -> /index.html`
+- This ensures direct loads like `/audit` and `/report/:publicId` do not return Vercel `404: NOT_FOUND`.

@@ -1,0 +1,6 @@
+{
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter costpilot-web build",
+  "outputDirectory": "apps/costpilot-web/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
