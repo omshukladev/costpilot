@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { FloatingElement } from "../../../shared/components/animations/FloatingElement";
 import { Spotlight } from "../../../shared/components/animations/Spotlight";
 import { ShootingStars } from "../../../shared/components/animations/ShootingStars";
@@ -46,7 +46,7 @@ export function Hero() {
 
   return (
     <section 
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 pt-32 pb-20 bg-black"
+      className="relative flex min-h-screen items-center justify-center px-6 pt-32 pb-20 bg-black"
       onMouseMove={handleMouseMove}
     >
       {/* Background Elements - Minimalist */}
@@ -93,10 +93,10 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto max-w-4xl text-balance text-6xl font-bold tracking-tighter sm:text-8xl lg:text-9xl leading-[0.85]"
+          className="mx-auto max-w-6xl text-6xl font-bold tracking-tighter sm:text-8xl lg:text-9xl leading-[0.85]"
         >
           Audit Your <br />
-          <span className="relative bg-gradient-to-b from-white via-emerald-100 to-emerald-400 bg-clip-text text-transparent italic pr-2">
+          <span className="relative bg-gradient-to-b from-white via-emerald-100 to-emerald-400 bg-clip-text text-transparent italic pr-12">
             AI Tool Spend
           </span>
         </motion.h1>

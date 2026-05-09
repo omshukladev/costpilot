@@ -1,5 +1,4 @@
 import { FadeIn } from "../../../shared/components/animations/FadeIn";
-import { HoverGlowCard } from "../../../shared/components/animations/HoverGlowCard";
 import { motion } from "framer-motion";
 
 const steps = [

@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 export function Navbar() {
   const [activeLink, setActiveLink] = useState<string | null>(null);
   const { scrollY } = useScroll();
-  
-  // Minimal background on scroll
-  const bgOpacity = useTransform(scrollY, [0, 100], [0, 0.4]);
   const navY = useTransform(scrollY, [0, 100], [0, 10]);
 
   return (

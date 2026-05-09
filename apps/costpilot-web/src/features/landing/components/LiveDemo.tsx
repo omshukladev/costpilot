@@ -1,7 +1,5 @@
 import { FadeIn } from "../../../shared/components/animations/FadeIn";
 import { AnimatedCounter } from "../../../shared/components/animations/AnimatedCounter";
-import { HoverGlowCard } from "../../../shared/components/animations/HoverGlowCard";
-import { AnimatedBorder } from "../../../shared/components/animations/AnimatedBorder";
 import { motion } from "framer-motion";
 
 const demoFindings = [
@@ -59,7 +57,7 @@ export function LiveDemo() {
                         <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] mb-4">Estimated Savings</p>
                         <p className="text-7xl font-bold tracking-tighter text-emerald-400">
                           $<AnimatedCounter end={4320} duration={2.5} />
-                          <span className="text-2xl text-emerald-500/20 ml-2">/yr</span>
+                          <span className="text-2xl text-emerald-500/20 ml-2 tracking-normal">/yr</span>
                         </p>
                       </div>
                     </div>
