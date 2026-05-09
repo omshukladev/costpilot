@@ -44,6 +44,18 @@ export async function insertAudit(
     .run();
 }
 
+export async function getAuditById(
+  db: D1Database,
+  id: string
+): Promise<AuditRow | null> {
+  const row = await db
+    .prepare("SELECT * FROM audits WHERE id = ?")
+    .bind(id)
+    .first<AuditRow>();
+
+  return row || null;
+}
+
 export async function getAuditByPublicId(
   db: D1Database,
   publicId: string

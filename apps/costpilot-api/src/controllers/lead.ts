@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { insertLead } from "../db/queries";
+import { insertLead, getAuditById } from "../db/queries";
 
 export async function create(c: any) {
   try {
@@ -16,8 +16,9 @@ export async function create(c: any) {
       createdAt: new Date().toISOString(),
     });
 
-    // Send confirmation email via Resend
-    await sendEmail(c.env, body.email);
+    // Look up audit to get publicId and savings for the email
+    const audit = await getAuditById(c.env.costpilot_db, body.auditId);
+    await sendEmail(c.env, body.email, audit?.monthly_savings, audit?.public_id);
 
     return c.json({ success: true, id });
   } catch (err) {
@@ -33,6 +34,8 @@ async function sendEmail(
     RESEND_FROM_NAME?: string;
   },
   to: string,
+  totalMonthlySavings?: number,
+  publicId?: string,
 ) {
   const apiKey = env.RESEND_API_KEY;
   const fromEmail = env.RESEND_FROM_EMAIL?.trim();
@@ -48,6 +51,26 @@ async function sendEmail(
     return;
   }
 
+  const reportLink = publicId
+    ? `https://costpilot-costpilot-web.vercel.app/report/${publicId}`
+    : null;
+
+  const isHighSavings = totalMonthlySavings && totalMonthlySavings > 500;
+
+  let html = `<p>Thanks for using CostPilot!</p>`;
+
+  if (reportLink) {
+    html += `<p>Your AI spend audit report is ready: <a href="${reportLink}">${reportLink}</a></p>`;
+  } else {
+    html += `<p>Your AI spend audit has been saved.</p>`;
+  }
+
+  if (isHighSavings) {
+    html += `<p>You have significant savings opportunities. The Credex team will reach out to help you capture those savings.</p>`;
+  }
+
+  html += `<p>— CostPilot Team</p>`;
+
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -59,10 +82,7 @@ async function sendEmail(
         from: `${fromName} <${fromEmail}>`,
         to,
         subject: "Your CostPilot Audit Report",
-        html: `<p>Thanks for using CostPilot!</p>
-<p>Your AI spend audit has been saved. You can access your report anytime using the unique link.</p>
-<p>If you have high savings opportunities, the Credex team will reach out to help you capture those savings.</p>
-<p>— CostPilot Team</p>`,
+        html,
       }),
     });
 

@@ -9,6 +9,8 @@ const leadSchema = z.object({
   role: z.string().optional(),
   teamSize: z.number().optional(),
   auditId: z.string().min(1),
+  totalMonthlySavings: z.number().optional(),
+  publicId: z.string().optional(),
 });
 
 const leadRoute = new Hono();
