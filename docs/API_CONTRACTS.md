@@ -34,22 +34,10 @@
 {
   "id": "nanoid",
   "publicId": "12-char-nanoid",
-  "input": { "...": "" },
-  "recommendations": [
-    {
-      "type": "downgrade",
-      "toolId": "cursor",
-      "currentPlan": "business",
-      "currentSpend": 80,
-      "recommendedAction": "Switch to Pro plan at $20/user/month",
-      "reasoning": "Business adds centralized billing...",
-      "monthlySavings": 40,
-      "yearlySavings": 480
-    }
-  ],
+  "recommendations": [{ "type": "downgrade", "monthlySavings": 40, ... }],
   "totalMonthlySavings": 40,
   "totalYearlySavings": 480,
-  "summary": "",
+  "summary": "AI-generated or fallback text...",
   "createdAt": "2026-05-08T00:00:00.000Z"
 }
 ```
@@ -60,29 +48,57 @@
 
 ### POST /lead
 
-**Status**: 📋 Planned
+**Status**: ✅ Built
 
-**Purpose**: Capture optional lead information after audit
+**Purpose**: Capture lead information and send confirmation email
 
 **Input**:
-- email (required)
-- company name (optional)
-- role (optional)
-- team size (optional)
-- auditId (required)
+```json
+{
+  "email": "user@example.com",
+  "companyName": "Acme Corp",
+  "role": "CTO",
+  "teamSize": 5,
+  "auditId": "abc123..."
+}
+```
+
+**Validation**:
+- `email`: valid email format
+- `companyName`, `role`, `teamSize`: optional
+- `auditId`: required string
+
+**Behavior**:
+- Saves lead to D1 (`leads` table)
+- Sends confirmation email via Resend from `noreply@metricflow.in`
+- If RESEND_API_KEY not set, email is skipped (lead still saved)
+
+**Errors**: 500 (server error)
 
 ---
 
 ### GET /report/:publicId
 
-**Status**: 📋 Planned
+**Status**: ✅ Built
 
 **Purpose**: Retrieve public audit report (no PII)
 
 **Output**:
-- sanitized audit data
-- recommendations
-- savings information
+```json
+{
+  "publicId": "abc123...",
+  "tools": [{ "toolId": "cursor", "plan": "pro", "monthlySpend": 20, "seats": 1 }],
+  "recommendations": [...],
+  "totalMonthlySavings": 0,
+  "totalYearlySavings": 0,
+  "summary": "...",
+  "createdAt": "2026-05-08T00:00:00.000Z"
+}
+```
+
+**Notes**:
+- No email, company name, or any PII returned
+- 404 if publicId not found
 
 ---
 
@@ -92,3 +108,4 @@
 - Return consistent response structures
 - Never expose sensitive lead data in public routes
 - Controllers handle logic, routes handle HTTP
+- Rate limited: 10 req/min per IP on POST /audit and POST /lead

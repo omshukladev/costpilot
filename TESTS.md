@@ -24,7 +24,7 @@ API route tests (2 tests):
 
 ### `apps/costpilot-api/src/__tests__/audit-engine.test.ts`
 
-Audit engine tests (8 tests):
+Audit engine tests (9 tests):
 - `detects Cursor Business with 2 seats and recommends downgrade to Pro` — plan downgrade logic
 - `detects ChatGPT Enterprise with 5 seats and recommends Team plan` — enterprise downgrade logic
 - `detects Claude API >$200 spend and suggests Credex credits` — credit optimization for API spend
@@ -33,6 +33,7 @@ Audit engine tests (8 tests):
 - `handles all 8 tools without crashing` — all tools produce valid recommendations
 - `returns zero savings for already-optimal setups` — no manufactured savings
 - `generates ISO timestamp in createdAt` — date format verification
+- `suggests alternative tools based on useCase` — useCase-driven cross-tool recommendations
 
 ### `apps/costpilot-api/src/__tests__/summary.test.ts`
 

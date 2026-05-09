@@ -2,9 +2,9 @@
 
 ## AI Summary Prompt
 
-**Status**: 📋 Pending (summary controller not yet built)
+**Status**: ✅ Implemented in `controllers/summary.ts`
 
-The AI summary will use the following prompt template when the `controllers/summary.ts` is built. The prompt takes the audit input and recommendations and generates a ~100 word personalized paragraph.
+The prompt below is sent to Gemini 2.0 Flash. If the API key is missing or the API call fails, a templated fallback is used instead.
 
 ### Prompt
 

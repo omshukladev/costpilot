@@ -71,3 +71,34 @@
 - Create `routes/lead.ts` and `routes/report.ts`
 - Wire all routes in `src/index.ts`
 - Write integration tests for routes
+
+---
+
+## Day 3 - 2026-05-09
+
+**Hours worked:** 5
+
+**What I did:**
+- Created POST /lead and GET /report/:publicId routes + controllers
+- Set up Resend with custom domain metricflow.in (DNS verified)
+- Added rate limit middleware (10 req/min) on POST routes
+- Wired all routes in index.ts
+- Fixed audit engine to use useCase for alternative tool recommendations
+- Updated PROMPTS.md and API_CONTRACTS.md (were stale, said "pending/planned")
+- Fixed CI to include lint step
+- Added 2 more tests (useCase alternatives, all-tools updated)
+- All 16 tests passing
+- Deployed with all 4 secrets as Cloudflare secrets
+
+**What I learned:**
+- Resend DNS setup with Cloudflare is straightforward (just TXT + MX records)
+- Rate limiting in Workers is per-instance — not distributed but good enough for MVP
+- useCase field isn't just metadata — the assignment expects it to drive recommendation logic
+
+**Blockers / what I'm stuck on:**
+- None currently
+
+**Plan for tomorrow:**
+- Start frontend (homepage + audit form)
+- Fill entrepreneurial docs (GTM, ECONOMICS, LANDING_COPY, METRICS)
+- Talk to 3 users for USER_INTERVIEWS.md

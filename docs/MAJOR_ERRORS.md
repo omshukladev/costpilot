@@ -69,3 +69,35 @@ The D1 binding in `wrangler.jsonc` had `"remote": true`, which tells the vitest 
 ### Fix
 
 Added `remoteBindings: false` to `vitest.config.ts` under `poolOptions.workers`. This tells the vitest pool to use local storage instead of trying to connect to remote resources.
+
+---
+
+## Audit Engine: Alternative-Tool Suggestions Looked "Manufactured"
+
+### Error
+
+Alternative-tool recommendations were being generated too aggressively (fixed percentage savings and broad suggestions), which could produce weak or non-defensible savings claims for low-spend or already-optimized setups.
+
+### Root Cause
+
+- Alternative recommendations used percent-based savings instead of modeled plan-price comparisons.
+- No strict guardrails for minimum spend, minimum absolute savings, or minimum savings percentage.
+- Alternative suggestions could be added even when an existing downgrade recommendation was already stronger.
+
+### Fix
+
+Implemented stricter, finance-defensible gating for `alternative-tool` recommendations in `audit-engine.ts`:
+
+- Added hard thresholds:
+  - minimum current spend: `$40/month`
+  - minimum alternative savings: `$25/month`
+  - minimum relative savings: `20%`
+- Switched to modeled alternative spend (`modeled plan price × seats`) instead of flat percentage assumptions.
+- Suppressed weaker alternatives when an existing recommendation already saves more (requires alternative to beat existing savings by a margin).
+- Added tests to ensure:
+  - low-spend setups do not get alternative recommendations
+  - weaker alternatives are suppressed when downgrade is stronger
+
+### Lesson
+
+For financial recommendation systems, "possible savings" is not enough. Suggestions should only appear when assumptions are explicit and savings clear enough to be defensible to a finance-literate reviewer.

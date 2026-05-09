@@ -22,4 +22,6 @@ jobs:
 
       - run: pnpm install
 
+      - run: pnpm --filter costpilot-api lint
+
       - run: pnpm test

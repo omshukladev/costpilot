@@ -162,6 +162,70 @@ Update this file after major development sessions.
 - Start frontend (homepage + audit form)
 - **Needs your input**: REFLECTION.md, USER_INTERVIEWS.md, GTM.md, ECONOMICS.md, LANDING_COPY.md, METRICS.md
 
+### Completed (backend quality + assignment alignment)
+
+- Hardened `alternative-tool` recommendation logic to avoid weak/manufactured savings:
+  - minimum spend gate (`$40/mo`)
+  - minimum absolute savings (`$25/mo`)
+  - minimum savings percentage (`20%`)
+  - suppress weaker alternatives when downgrade recommendations are stronger
+- Switched alternative-tool savings to modeled spend math (`modeled plan price × seats`) instead of flat percentage assumptions
+- Added/updated backend tests for:
+  - low-spend alternative suppression
+  - weaker-alternative suppression when downgrade is stronger
+- Documented the problem + fix in `docs/MAJOR_ERRORS.md`
+- Added API lint script in `apps/costpilot-api/package.json` (`lint: tsc --noEmit`) so CI lint step is valid
+- Updated `PRICING_DATA.md` to global USD + official-source alignment (including Gemini Pro/Ultra from Google One global page)
+- Removed non-official pricing references from pricing docs
+- Aligned backend Gemini downgrade logic text/math with official pricing (`$19.99/user/month`)
+- Re-ran API lint/tests after changes; backend checks pass
+
+### Decisions
+
+- Prioritize defensible financial recommendations over aggressive optimization suggestions
+- Keep alternative recommendations conservative unless savings are clearly provable
+- Keep assignment pricing documentation tied to official global/vendor sources
+
+### Next Steps
+
+- Frontend implementation and polish remain the primary pending work
+
+### Completed (global pricing doc cleanup)
+
+- Updated `PRICING_DATA.md` to use global USD pricing for Gemini Pro/Ultra from official Google One page (`one.google.com/intl/en/about/google-ai-plans`)
+- Removed non-official third-party pricing references from Cursor, Anthropic API, and Windsurf sections
+- Reworded non-public enterprise rows to "Custom pricing" where official fixed numbers are not published
+- Refreshed verification dates in updated rows to `2026-05-09`
+- Aligned backend Gemini downgrade logic text/math with official global USD pricing (`$19.99/user/month`)
+
+### Completed (backend reassessment + CI lint fix)
+
+- Re-ran backend-to-assignment review after latest updates
+- Confirmed API backend alignment improved: useCase-driven alternatives now present, `/lead` and `/report` docs now marked built
+- Identified CI blocker: workflow lint step targeted `costpilot-api` but package had no `lint` script
+- Added API lint script in `apps/costpilot-api/package.json`: `lint: tsc --noEmit`
+- Verified backend lint command now passes (`pnpm --filter costpilot-api lint`)
+- Re-ran backend tests after lint fix; all 16 tests passing
+
+### Decisions
+
+- Keep CI lint step for backend as `pnpm --filter costpilot-api lint`; satisfy it by defining a local API lint script
+- Defer `PRICING_DATA.md` source cleanup for now based on user instruction to skip it temporarily
+
+### Next Steps
+
+- Discuss recommendation-quality concern in detail (avoid perceived manufactured savings for low-spend cases)
+- Revisit `PRICING_DATA.md` official-source cleanup when resumed
+
+### Completed (alternative-tool quality hardening)
+
+- Hardened alternative-tool logic in `audit-engine.ts` to avoid weak/"manufactured" savings outputs
+- Added strict gates for alternatives: minimum spend, minimum absolute savings, minimum percentage savings
+- Switched alternatives to modeled spend math (`modeled plan price × seats`) instead of flat percentage assumptions
+- Suppressed weaker alternatives when existing downgrade recommendations are already stronger
+- Added regression tests for low-spend suppression and weaker-alternative suppression
+- Documented the issue and fix in `docs/MAJOR_ERRORS.md`
+
 ### Completed
 
 - Made Resend sender configurable with `RESEND_FROM_EMAIL` and `RESEND_FROM_NAME`
@@ -182,3 +246,31 @@ Update this file after major development sessions.
 - Set `RESEND_FROM_EMAIL` to the verified domain sender in dev and production
 - Confirm SPF, DKIM, and DMARC are aligned for the verified domain
 - Check Gmail spam/promotions if delivery still looks missing
+
+---
+
+## 2026-05-09
+
+### Completed (assignment gap fixes)
+
+- Updated `PROMPTS.md` — changed status from "pending" to "implemented"
+- Updated `docs/API_CONTRACTS.md` — marked /lead and /report as ✅ built with full docs
+- Added `alternative-tool` recommendation type to audit engine — now evaluates cheaper alternatives by useCase
+- Updated CI workflow — added `pnpm lint` step alongside tests
+- Fixed test for all-8-tools (now handles extra useCase recommendations)
+- Added test for useCase-based alternative tool recommendations
+- All 16 tests passing
+
+### Decisions
+
+- **useCase-driven alternatives**: Coding tools (Cursor, Copilot, Windsurf) suggest ChatGPT/Claude for non-coding use cases. General tools (ChatGPT, Claude) suggest Cursor/Copilot for coding use cases.
+- **Resend config via env vars**: Made sender email/name configurable via RESEND_FROM_EMAIL and RESEND_FROM_NAME secrets
+
+### Problems Encountered
+
+- Overwriting same function with piecemeal edits caused syntax errors — had to rewrite full functions cleanly
+
+### Next Steps
+
+- Start frontend (homepage + audit form)
+- **Needs your input**: REFLECTION.md, USER_INTERVIEWS.md, GTM.md, ECONOMICS.md, LANDING_COPY.md, METRICS.md

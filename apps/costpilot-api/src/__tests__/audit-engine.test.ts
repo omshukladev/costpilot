@@ -129,7 +129,7 @@ describe("audit-engine", () => {
 
     const result = runAudit(input);
 
-    expect(result.recommendations.length).toBe(8);
+    expect(result.recommendations.length).toBeGreaterThanOrEqual(8);
     expect(result.recommendations.every((r) => r.monthlySavings >= 0)).toBe(
       true
     );
@@ -149,6 +149,54 @@ describe("audit-engine", () => {
     expect(result.totalMonthlySavings).toBe(0);
     expect(result.totalYearlySavings).toBe(0);
     expect(result.recommendations[0].type).toBe("already-optimal");
+  });
+
+  it("suggests alternative tools based on useCase", () => {
+    const input: AuditInput = {
+      tools: [
+        { toolId: "cursor", plan: "enterprise", monthlySpend: 200, seats: 2 },
+      ],
+      teamSize: 2,
+      useCase: "writing",
+    };
+
+    const result = runAudit(input);
+    const altRecs = result.recommendations.filter((r) => r.type === "alternative-tool");
+
+    expect(altRecs.length).toBeGreaterThanOrEqual(1);
+    expect(altRecs[0].recommendedAction).toContain("ChatGPT");
+  });
+
+  it("does not suggest alternative tools for low spend setups", () => {
+    const input: AuditInput = {
+      tools: [
+        { toolId: "cursor", plan: "pro", monthlySpend: 20, seats: 1 },
+      ],
+      teamSize: 1,
+      useCase: "writing",
+    };
+
+    const result = runAudit(input);
+    const altRecs = result.recommendations.filter((r) => r.type === "alternative-tool");
+
+    expect(altRecs.length).toBe(0);
+  });
+
+  it("suppresses weaker alternative suggestion when downgrade already saves more", () => {
+    const input: AuditInput = {
+      tools: [
+        { toolId: "cursor", plan: "business", monthlySpend: 80, seats: 2 },
+      ],
+      teamSize: 2,
+      useCase: "writing",
+    };
+
+    const result = runAudit(input);
+    const altRecs = result.recommendations.filter((r) => r.type === "alternative-tool");
+    const downgradeRecs = result.recommendations.filter((r) => r.type === "downgrade");
+
+    expect(downgradeRecs.length).toBe(1);
+    expect(altRecs.length).toBe(0);
   });
 
   it("generates ISO timestamp in createdAt", () => {
