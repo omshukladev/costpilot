@@ -101,3 +101,23 @@ Implemented stricter, finance-defensible gating for `alternative-tool` recommend
 ### Lesson
 
 For financial recommendation systems, "possible savings" is not enough. Suggestions should only appear when assumptions are explicit and savings clear enough to be defensible to a finance-literate reviewer.
+
+---
+
+## Alternative-Tool Suggestions Ignored User's Existing Stack
+
+### Error
+
+The audit engine suggested "Consider Cursor Pro" for Claude/ChatGPT users who already had Cursor in their stack. This inflated total savings because it assumed replacing Claude with Cursor would save money, but the user was already paying for Cursor.
+
+Example: User with Claude API ($500/mo) + Cursor Business ($80/mo) + ChatGPT Enterprise ($300/mo) was told to "Replace Claude with Cursor Pro" saving $480/mo — but they already use Cursor. The total was falsely inflated to $720/mo.
+
+### Root Cause
+
+`maybeBuildAlternativeRecommendation()` didn't check whether the user already had the suggested tool. It generated alternative-tool recommendations based only on useCase + spend, ignoring the existing tool stack.
+
+### Fix
+
+Added `allTools` parameter to `maybeBuildAlternativeRecommendation()`. The function now extracts the suggested tool name from the action text (e.g., "Cursor Pro" from "Consider Cursor Pro at $20/..."), maps it to toolIds via `altToolMapping`, and skips the suggestion if the user already has any of those tools.
+
+5 callers updated to pass `input.tools`. Added regression test. Total savings for the multi-tool test case dropped from $720/mo to $265/mo (correct).

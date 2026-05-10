@@ -69,6 +69,18 @@ function analyzeTool(tool: ToolEntry, input: AuditInput): Recommendation[] {
   }
 }
 
+// Map alternative tool text to toolIds for duplicate detection
+const altToolMapping: Record<string, string[]> = {
+  "Cursor or Copilot": ["cursor", "copilot"],
+  "Claude or ChatGPT": ["claude", "chatgpt"],
+  "ChatGPT or Claude": ["chatgpt", "claude"],
+  "ChatGPT or Gemini": ["chatgpt", "gemini"],
+  "Claude or Gemini": ["claude", "gemini"],
+  "Cursor Pro": ["cursor"],
+  "ChatGPT Plus": ["chatgpt"],
+  "Claude Pro": ["claude"],
+};
+
 function optimal(tool: ToolEntry, reason: string): Recommendation {
   return {
     type: "already-optimal",
@@ -166,10 +178,34 @@ function maybeBuildAlternativeRecommendation(
   existingRecommendations: Recommendation[],
   action: string,
   reason: string,
-  modeledMonthlySpend: number
+  modeledMonthlySpend: number,
+  allTools?: ToolEntry[],
 ): Recommendation | null {
   if (tool.monthlySpend < ALT_MIN_CURRENT_SPEND) {
     return null;
+  }
+
+  // Skip if user already uses the suggested alternative tool
+  if (allTools) {
+    // "Consider X instead of Y for Z" → extract "X"
+    // "Consider X for Z" → extract "X"
+    let altPart = action;
+    if (altPart.startsWith("Consider ")) altPart = altPart.slice(9);
+    const insteadIdx = altPart.indexOf(" instead of ");
+    if (insteadIdx !== -1) altPart = altPart.slice(0, insteadIdx);
+    const forIdx = altPart.lastIndexOf(" for ");
+    if (forIdx !== -1) altPart = altPart.slice(0, forIdx);
+    const atIdx = altPart.indexOf(" at $");
+    if (atIdx !== -1) altPart = altPart.slice(0, atIdx);
+    altPart = altPart.trim();
+
+    const altName = altToolMapping[altPart];
+    if (altName && altName.some(
+      (id) => id !== tool.toolId && allTools.some((t) => t.toolId === id)
+    )) {
+      console.log("ALT SKIPPED - user already has:", altName);
+      return null;
+    }
   }
 
   const monthlySavings = Math.round(tool.monthlySpend - modeledMonthlySpend);
@@ -241,7 +277,8 @@ function analyzeCursor(tool: ToolEntry, input: AuditInput): Recommendation[] {
         recs,
         `Consider ${alt.tool} instead of Cursor for ${input.useCase} tasks`,
         `Cursor is optimized for coding. For ${input.useCase}, ${alt.reason}.`,
-        tool.seats * 20
+        tool.seats * 20,
+        input.tools,
       );
       if (altRec) {
         recs.push(altRec);
@@ -286,7 +323,8 @@ function analyzeCopilot(tool: ToolEntry, input: AuditInput): Recommendation[] {
         recs,
         `Consider ${alt.tool} instead of Copilot for ${input.useCase} tasks`,
         `Copilot is designed for code autocompletion. For ${input.useCase}, ${alt.reason}.`,
-        tool.seats * 20
+        tool.seats * 20,
+        input.tools,
       );
       if (altRec) {
         recs.push(altRec);
@@ -330,7 +368,8 @@ function analyzeClaude(tool: ToolEntry, input: AuditInput): Recommendation[] {
       recs,
       "Consider Cursor Pro at $20/user/month for coding tasks",
       "Claude is general-purpose AI. For dedicated coding workflows, Cursor offers stronger IDE-native autocomplete and editing.",
-      tool.seats * 20
+      tool.seats * 20,
+      input.tools,
     );
     if (altRec) {
       recs.push(altRec);
@@ -358,7 +397,8 @@ function analyzeChatGPT(tool: ToolEntry, input: AuditInput): Recommendation[] {
       recs,
       "Consider Cursor Pro at $20/user/month for coding tasks",
       "ChatGPT is a broad assistant, while Cursor is purpose-built for coding with inline edits and IDE workflow support.",
-      tool.seats * 20
+      tool.seats * 20,
+      input.tools,
     );
     if (altRec) {
       recs.push(altRec);
@@ -442,7 +482,8 @@ function analyzeWindsurf(tool: ToolEntry, input: AuditInput): Recommendation[] {
       recs,
       `Consider ChatGPT Plus or Claude Pro for ${input.useCase} tasks`,
       "Windsurf is designed for coding. For non-coding workflows, general assistants are often a better fit at lower cost.",
-      tool.seats * 20
+      tool.seats * 20,
+      input.tools,
     );
     if (altRec) {
       recs.push(altRec);

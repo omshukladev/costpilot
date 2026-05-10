@@ -182,6 +182,24 @@ describe("audit-engine", () => {
     expect(altRecs.length).toBe(0);
   });
 
+  it("does not suggest alternative tool that user already has in stack", () => {
+    const input: AuditInput = {
+      tools: [
+        { toolId: "claude", plan: "api-direct", monthlySpend: 200, seats: 1 },
+        { toolId: "cursor", plan: "pro", monthlySpend: 20, seats: 1 },
+      ],
+      teamSize: 2,
+      useCase: "coding",
+    };
+
+    const result = runAudit(input);
+    const altRecs = result.recommendations.filter(
+      (r) => r.type === "alternative-tool" && r.toolId === "claude"
+    );
+
+    expect(altRecs.length).toBe(0);
+  });
+
   it("suppresses weaker alternative suggestion when downgrade already saves more", () => {
     const input: AuditInput = {
       tools: [

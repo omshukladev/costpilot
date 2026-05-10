@@ -444,3 +444,12 @@ Update this file after major development sessions.
   - seats
 - This removes the “have to type 090” friction when replacing default/previous values.
 - Persisted the latest audit `result` in Zustand persistence so the preferred results view remains stable across refresh/re-hydration instead of unexpectedly reverting presentation context.
+
+### Completed (alternative-tool duplicate stack fix)
+
+- Fixed `maybeBuildAlternativeRecommendation()` to check user's existing tool stack before suggesting alternatives
+- Claude/ChatGPT no longer suggest "Switch to Cursor Pro" when user already has Cursor
+- Extracts tool name from action text and maps to toolIds via `altToolMapping`
+- Added regression test (19 total, all passing)
+- Total savings for multi-tool case dropped from $720/mo to $265/mo (no more phantom savings)
+- Logged in docs/MAJOR_ERRORS.md
