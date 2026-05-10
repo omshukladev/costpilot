@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Loader2, ArrowRight } from "lucide-react";
 import { ToolRow } from "./ToolRow";
@@ -23,13 +23,22 @@ export function AuditForm() {
   const setUseCase = useAuditStore((s) => s.setUseCase);
 
   const auditMutation = useAudit();
+  const [teamSizeInput, setTeamSizeInput] = useState(String(teamSize));
+
+  useEffect(() => {
+    setTeamSizeInput(String(teamSize));
+  }, [teamSize]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      auditMutation.mutate({ tools, teamSize, useCase } as AuditInput);
+      const parsedTeamSize = Number(teamSizeInput);
+      const safeTeamSize = Number.isFinite(parsedTeamSize) && parsedTeamSize >= 1 ? parsedTeamSize : 1;
+
+      setTeamSize(safeTeamSize);
+      auditMutation.mutate({ tools, teamSize: safeTeamSize, useCase } as AuditInput);
     },
-    [tools, teamSize, useCase, auditMutation]
+    [tools, teamSizeInput, useCase, setTeamSize, auditMutation]
   );
 
   return (
@@ -79,11 +88,26 @@ export function AuditForm() {
           <div>
             <label className={labelClasses}>Team size</label>
             <input
-              type="number"
-              min={1}
-              value={teamSize}
-              onChange={(e) => setTeamSize(Number(e.target.value))}
+              type="text"
+              inputMode="numeric"
+              value={teamSizeInput}
+              onChange={(e) => {
+                const digitsOnly = e.target.value.replace(/\D/g, "");
+                const normalized = digitsOnly.replace(/^0+(?=\d)/, "");
+                setTeamSizeInput(normalized);
+
+                if (normalized === "") return;
+                setTeamSize(Math.max(1, Number(normalized)));
+              }}
+              onBlur={() => {
+                if (teamSizeInput === "") return;
+
+                const normalizedTeamSize = Math.max(1, Number(teamSizeInput));
+                setTeamSizeInput(String(normalizedTeamSize));
+                setTeamSize(normalizedTeamSize);
+              }}
               onFocus={(e) => e.currentTarget.select()}
+              onClick={(e) => e.currentTarget.select()}
               className={inputClasses}
               placeholder="e.g. 5"
             />

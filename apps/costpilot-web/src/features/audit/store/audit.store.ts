@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ToolId, UseCase, AuditResult } from "@costpilot/shared";
 import type { FormToolEntry } from "../types/audit.types";
-import { PLANS_BY_TOOL } from "../types/audit.types";
+import { PLANS_BY_TOOL, getPlanUnitPrice } from "../types/audit.types";
 
 function emptyTool(): FormToolEntry {
   return {
@@ -54,13 +54,29 @@ export const useAuditStore = create<AuditStore>()(
       updateTool: (index, data) =>
         set((s) => {
           const tools = [...s.tools];
-          const updated = { ...tools[index], ...data };
+          const previous = tools[index];
+          const updated = { ...previous, ...data };
 
-          if (data.toolId && data.toolId !== tools[index].toolId) {
+          if (data.toolId && data.toolId !== previous.toolId) {
             const plans = PLANS_BY_TOOL[data.toolId as ToolId];
             if (plans && plans.length > 0) {
               updated.plan = plans[0].value;
             }
+          }
+
+          if (typeof updated.seats !== "number" || Number.isNaN(updated.seats)) {
+            updated.seats = 1;
+          }
+          updated.seats = Math.max(1, Math.trunc(updated.seats));
+
+          if (typeof updated.monthlySpend !== "number" || Number.isNaN(updated.monthlySpend)) {
+            updated.monthlySpend = 0;
+          }
+          updated.monthlySpend = Math.max(0, updated.monthlySpend);
+
+          const unitPrice = getPlanUnitPrice(updated.toolId, updated.plan);
+          if (unitPrice !== null) {
+            updated.monthlySpend = Number((unitPrice * updated.seats).toFixed(2));
           }
 
           tools[index] = updated;

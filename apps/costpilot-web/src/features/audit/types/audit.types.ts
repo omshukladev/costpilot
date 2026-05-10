@@ -13,6 +13,45 @@ export interface AuditFormData {
   useCase: UseCase;
 }
 
+const PLAN_UNIT_PRICE: Partial<Record<ToolId, Partial<Record<AnyPlan, number>>>> = {
+  cursor: {
+    hobby: 0,
+    pro: 20,
+    business: 40,
+  },
+  copilot: {
+    individual: 10,
+    business: 39,
+  },
+  claude: {
+    free: 0,
+    pro: 20,
+    max: 100,
+    team: 30,
+  },
+  chatgpt: {
+    plus: 20,
+    team: 30,
+  },
+  gemini: {
+    pro: 19.99,
+  },
+  windsurf: {
+    free: 0,
+    pro: 15,
+    teams: 35,
+  },
+};
+
+export function getPlanUnitPrice(toolId: ToolId, plan: AnyPlan): number | null {
+  const value = PLAN_UNIT_PRICE[toolId]?.[plan];
+  return typeof value === "number" ? value : null;
+}
+
+export function isManualSpendPlan(toolId: ToolId, plan: AnyPlan): boolean {
+  return getPlanUnitPrice(toolId, plan) === null;
+}
+
 export const PLANS_BY_TOOL: Record<ToolId, { value: AnyPlan; label: string }[]> = {
   cursor: [
     { value: "hobby", label: "Hobby — Free" },
