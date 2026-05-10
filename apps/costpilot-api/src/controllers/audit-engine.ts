@@ -23,14 +23,19 @@ export function runAudit(input: AuditInput): AuditResultData {
     recommendations.push(...recs);
   }
 
-  const totalMonthlySavings = recommendations.reduce(
-    (sum, r) => sum + r.monthlySavings,
-    0
+  // Only count the best savings per tool (downgrade + alternative are mutually exclusive)
+  const savingsByTool = new Map<string, number>();
+  for (const r of recommendations) {
+    const current = savingsByTool.get(r.toolId) || 0;
+    if (r.monthlySavings > current) {
+      savingsByTool.set(r.toolId, r.monthlySavings);
+    }
+  }
+
+  const totalMonthlySavings = Array.from(savingsByTool.values()).reduce(
+    (sum, v) => sum + v, 0
   );
-  const totalYearlySavings = recommendations.reduce(
-    (sum, r) => sum + r.yearlySavings,
-    0
-  );
+  const totalYearlySavings = totalMonthlySavings * 12;
 
   return {
     id: "",

@@ -1,5 +1,6 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AuditInput, Recommendation } from "@costpilot/shared";
+
+const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 
 export async function generateSummary(
   apiKey: string | undefined,
@@ -13,9 +14,6 @@ export async function generateSummary(
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     const toolsText = input.tools
       .map((t) => `- ${t.toolId} (${t.plan}): $${t.monthlySpend}/month, ${t.seats} seat(s)`)
       .join("\n");
@@ -38,8 +36,27 @@ Total yearly savings: $${totalYearlySavings}
 
 Write in a professional, helpful tone. Do not make up specific numbers. If there are no savings, acknowledge their setup is efficient.`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const response = await fetch(DEEPSEEK_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 200,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("DeepSeek API error:", response.status, errorBody);
+      return buildFallback(input, recommendations, totalMonthlySavings, totalYearlySavings);
+    }
+
+    const data: { choices?: { message?: { content?: string } }[] } = await response.json();
+    const text = data?.choices?.[0]?.message?.content;
 
     if (!text || text.length < 20) {
       return buildFallback(input, recommendations, totalMonthlySavings, totalYearlySavings);
@@ -47,7 +64,7 @@ Write in a professional, helpful tone. Do not make up specific numbers. If there
 
     return text;
   } catch (err) {
-    console.error("Gemini API error:", err);
+    console.error("DeepSeek API error:", err);
     return buildFallback(input, recommendations, totalMonthlySavings, totalYearlySavings);
   }
 }
