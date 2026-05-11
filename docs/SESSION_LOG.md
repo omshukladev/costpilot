@@ -453,3 +453,30 @@ Update this file after major development sessions.
 - Added regression test (19 total, all passing)
 - Total savings for multi-tool case dropped from $720/mo to $265/mo (no more phantom savings)
 - Logged in docs/MAJOR_ERRORS.md
+
+### Completed (submission gap tracker)
+
+- Added `docs/featureleft.md` to track remaining assignment requirements and final submission checks.
+
+### Completed (premium UI polish pass)
+
+- Replaced native browser selects in the audit form with custom glassmorphism dropdowns for a more premium enterprise feel.
+- Restructured tool rows into layered modules with clearer top/bottom hierarchy and a contextual footer strip.
+- Tightened results/report lighting and added metric guardrails so overlap and optimization numbers read more credibly together.
+
+### Completed (tool module header actions fix)
+
+- Separated the `SYSTEM PRICING` badge and the remove button into distinct header actions.
+- Added spacing and padding so the close control no longer visually merges with the badge.
+- Kept the header cluster lightweight with a subtle circular remove button and centered alignment.
+
+### Completed (results motion orchestration)
+
+- Added staggered reveal timing to the results page so the hero, KPIs, transformation flow, allocation charts, briefing, and CTAs appear sequentially.
+- Animated savings, optimization score, confidence, overlap exposure, and spend bars with restrained count-up / width growth motion.
+- Softened the ambient glow and hover depth so motion feels cinematic and controlled rather than flashy.
+
+### Completed (cursor spotlight boost)
+
+- Increased the global cursor spotlight intensity slightly so the hover light feels more present on the results page.
+- Expanded the spotlight size and softened the blur bloom to keep it premium instead of neon-heavy.

@@ -116,7 +116,7 @@ export function ReportPage() {
           Back
         </Link>
 
-        <header className="mt-7 rounded-[2rem] border border-white/[0.08] bg-black/50 p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl sm:p-9">
+        <header className="mt-7 rounded-[2rem] border border-white/[0.08] bg-black/46 p-7 shadow-[0_22px_60px_-38px_rgba(16,185,129,0.22)] backdrop-blur-xl sm:p-9">
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/22 bg-emerald-500/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-emerald-300/72">
               <ShieldCheck size={12} />
@@ -138,7 +138,7 @@ export function ReportPage() {
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4 sm:col-span-2">
+            <div className="rounded-xl border border-emerald-500/16 bg-emerald-500/[0.05] p-4 sm:col-span-2">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Monthly savings</p>
               <p className="mt-2 text-5xl font-semibold tracking-[-0.03em] text-emerald-300">
                 {hasSavings ? (
@@ -151,19 +151,19 @@ export function ReportPage() {
               </p>
               <p className="mt-1 text-[11px] text-emerald-200/70">{formatCurrency(data.totalYearlySavings)} annualized</p>
             </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/45 p-4">
+            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Optimization score</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white/86">{optimizationScore}%</p>
             </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/45 p-4">
+            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Confidence</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white/86">{confidence}%</p>
             </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/45 p-4">
+            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Tools analyzed</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white/86">{toolsAnalyzed}</p>
             </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/45 p-4">
+            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Risk</p>
               <p className="mt-2 text-2xl font-semibold capitalize tracking-tight text-white/86">{risk}</p>
             </div>

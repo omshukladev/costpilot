@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Loader2, ArrowRight } from "lucide-react";
 import { ToolRow } from "./ToolRow";
+import { PremiumSelect } from "./PremiumSelect";
 import { USE_CASE_OPTIONS } from "../types/audit.types";
 import { useAuditStore } from "../store/audit.store";
 import { useAudit } from "../hooks/useAudit";
@@ -113,18 +114,16 @@ export function AuditForm() {
             />
           </div>
           <div>
-            <label className={labelClasses}>Primary use case</label>
-            <select
+            <PremiumSelect
+              label="Primary use case"
               value={useCase}
-              onChange={(e) => setUseCase(e.target.value as UseCase)}
-              className={inputClasses}
-            >
-              {USE_CASE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-black text-white">
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              options={USE_CASE_OPTIONS.map((opt) => ({
+                value: opt.value,
+                label: opt.label,
+                meta: opt.value === useCase ? "active" : undefined,
+              }))}
+              onChange={(nextUseCase) => setUseCase(nextUseCase as UseCase)}
+            />
           </div>
         </div>
       </section>

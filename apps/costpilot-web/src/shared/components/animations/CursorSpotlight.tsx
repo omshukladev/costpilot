@@ -31,11 +31,11 @@ export function CursorSpotlight() {
   return (
     <div
       ref={spotRef}
-      className="pointer-events-none fixed z-[100] h-[400px] w-[400px] rounded-full opacity-[0.04] transition-opacity duration-1000"
+      className="pointer-events-none fixed z-[100] h-[520px] w-[520px] rounded-full opacity-[0.075] mix-blend-screen transition-opacity duration-1000"
       style={{
         background:
-          "radial-gradient(circle at center, #4ade80, #84cc16 30%, transparent 70%)",
-        filter: "blur(80px)",
+          "radial-gradient(circle at center, rgba(74,222,128,0.95), rgba(74,222,128,0.42) 28%, rgba(132,204,22,0.18) 46%, transparent 72%)",
+        filter: "blur(96px)",
       }}
     />
   );
