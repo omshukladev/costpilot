@@ -137,3 +137,24 @@ The `generateSummary()` function returned just a string — no source flag. The 
 ### Fix
 
 Updated `generateSummary()` to return `{ text, source }` where `source` is `"deepseek"` or `"fallback"`. Added `summary_source` column to the `audits` table (migration 0002). Persisted the source in D1 alongside the summary. Exposed `summarySource` in audit and report API responses. Now you can check a single API response field to know exactly which path was used.
+
+---
+
+## Audit Engine Used Seat-Count Thresholds That Missed Savings for Larger Teams
+
+### Error
+
+The audit engine missed significant savings for larger teams. ChatGPT Enterprise with 15 seats ($900/mo) was marked "optimal" because the check required `seats <= 10`. Claude Team with 10 seats ($300/mo) was also marked "optimal" because the check required `seats <= 2`. The Credex flow never triggered because savings appeared too low.
+
+### Root Cause
+
+Downgrade thresholds used hardcoded seat counts (`seats <= 10`, `seats <= 2`, `seats <= 5`) instead of checking per-seat cost. For large teams, even though the per-seat overpayment was the same, the total savings were being ignored.
+
+### Fix
+
+Changed all three thresholds to use **per-seat cost** instead of seat count:
+- **ChatGPT Enterprise**: `seats <= 10` → `seatCost > $30` (Team price)
+- **Claude Team**: `seats <= 2` → `seatCost > $20` (Pro price)
+- **Windsurf Enterprise**: `seats <= 5` → `seatCost > $35` (Teams price)
+
+Now any team, regardless of size, gets flagged if they're paying more per seat than the cheaper plan. 19 tests passing.

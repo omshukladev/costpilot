@@ -588,8 +588,51 @@ Update this file after major development sessions.
 
 - Use worker logs or the `summarySource` field to confirm future audits are using `deepseek` rather than fallback.
 
+### Completed (report page polish)
+
+- Removed the unnecessary embed-code button and helper text from the public report page to keep the executive report focused.
+- Added restrained Framer Motion page-entry and section reveal behavior to the hero, KPI cards, recommendations, analysis briefing, widget preview, and footer CTA.
+- Gave the Open Widget and Run Audit CTAs subtle hover/tap motion while keeping the layout, copy, and report logic unchanged.
+
+### Decisions
+
+- Keep the widget preview card and public-link/share flow, but remove the copy-embed workflow because it diluted the report experience.
+
+### Problems Encountered
+
+- None.
+
+### Next Steps
+
+- Leave the page as-is unless another report polish regression appears.
+
+### Completed (report button/card motion pass)
+
+- Tightened the public report page interactions with more premium hover depth, border glow, and tap feedback on CTAs and cards.
+- Upgraded report recommendation, briefing, widget, and footer surfaces with subtler executive-dashboard motion.
+- Kept the layout and report logic unchanged while making the page feel less static.
+
+### Decisions
+
+- Keep motion restrained and depth-led rather than flashy or bouncy.
+
+### Problems Encountered
+
+- Duplicate motion transition props on the widget preview card needed cleanup during the polish pass.
+
+### Next Steps
+
+- No further motion changes unless another report interaction regression appears.
+
 ### Completed (Credex surface for high savings + CTA copy fix)
 
 - Added prominent Credex consultation card on results page when savings > $500/mo (gold/amber card with "Book a Credex Consultation" CTA)
 - Fixed low-savings CTA from "Notify me on pricing changes" → "Notify me when new optimizations apply" to match assignment wording
 - Both changes ensure assignment compliance: Credex surfaced for high-value leads, honest messaging for low-savings audits
+
+### Completed (seat-count threshold fix for larger teams)
+
+- Fixed ChatGPT Enterprise, Claude Team, and Windsurf Enterprise downgrade checks that used hardcoded seat counts (`seats <= 10`, `seats <= 2`, `seats <= 5`)
+- Changed all three to use per-seat cost instead: flag if per-seat cost exceeds cheaper plan price, regardless of team size
+- Now correctly finds savings for large teams (e.g., ChatGPT Enterprise 15 seats at $900/mo → $450/mo savings)
+- Logged in MAJOR_ERRORS.md

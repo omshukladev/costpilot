@@ -10,13 +10,14 @@ import {
   RefreshCw,
   ExternalLink,
   ShieldCheck,
-  Copy,
 } from "lucide-react";
 import { useReport } from "../hooks/useReport";
 import { AnimatedCounter } from "@/shared/components/animations/AnimatedCounter";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 import type { RecommendationType } from "@costpilot/shared";
 import { EmbedWidget } from "../components/EmbedWidget";
+
+const MotionLink = motion(Link);
 
 const typeConfig: Record<RecommendationType, { icon: typeof CheckCircle; label: string; color: string }> = {
   downgrade: { icon: ArrowDown, label: "Downgrade", color: "text-emerald-300" },
@@ -35,12 +36,55 @@ function deriveRiskLevel(savings: number, spend: number) {
   return "low";
 }
 
+const pageVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.55,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 12, scale: 0.99 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
+
+const actionMotion = {
+  whileHover: {
+    y: -1,
+    scale: 1.01,
+    boxShadow: "0 18px 42px -28px rgba(16,185,129,0.42)",
+  },
+  whileTap: { scale: 0.985 },
+};
+
 export function ReportPage() {
   const { publicId } = useParams<{ publicId: string }>();
   const { data, isLoading, isError } = useReport(publicId || "");
   const [isExporting, setIsExporting] = useState(false);
-  const [isCopyingWidget, setIsCopyingWidget] = useState(false);
-  const [copiedWidget, setCopiedWidget] = useState(false);
 
   useEffect(() => {
     if (!data) return;
@@ -89,20 +133,6 @@ export function ReportPage() {
     }
   };
 
-  const handleCopyWidget = async () => {
-    if (!data || isCopyingWidget) return;
-
-    setIsCopyingWidget(true);
-    try {
-      const embedCode = `<iframe src="${window.location.origin}/widget/${data.publicId}" width="100%" height="420" style="border:0;border-radius:20px;overflow:hidden;background:#000;" loading="lazy"></iframe>`;
-      await navigator.clipboard.writeText(embedCode);
-      setCopiedWidget(true);
-      setTimeout(() => setCopiedWidget(false), 1800);
-    } finally {
-      setIsCopyingWidget(false);
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black">
@@ -144,21 +174,36 @@ export function ReportPage() {
     : 96;
 
   return (
-    <div className="relative min-h-screen bg-black">
+    <motion.div
+      initial="hidden"
+      animate="show"
+      variants={pageVariants}
+      className="relative min-h-screen bg-black"
+    >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(16,185,129,0.06),transparent_45%)]" />
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(16,185,129,0.06),transparent_45%)]"
+          animate={{ opacity: [0.55, 0.8, 0.55], scale: [1, 1.015, 1] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 sm:py-28">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/28 transition-colors hover:text-emerald-300/80"
-        >
-          <ArrowLeft size={12} />
-          Back
-        </Link>
+      <motion.div className="relative z-10 mx-auto max-w-6xl px-6 py-24 sm:py-28">
+        <motion.div variants={sectionVariants}>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/28 transition-colors hover:text-emerald-300/80"
+          >
+            <ArrowLeft size={12} />
+            Back
+          </Link>
+        </motion.div>
 
-        <header className="mt-7 rounded-[2rem] border border-white/[0.08] bg-black/46 p-7 shadow-[0_22px_60px_-38px_rgba(16,185,129,0.22)] backdrop-blur-xl sm:p-9">
+        <motion.header
+          variants={sectionVariants}
+          className="mt-7 rounded-[2rem] border border-white/[0.08] bg-black/46 p-7 shadow-[0_22px_60px_-38px_rgba(16,185,129,0.22)] backdrop-blur-xl sm:p-9"
+        >
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/22 bg-emerald-500/[0.06] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-emerald-300/72">
               <ShieldCheck size={12} />
@@ -172,21 +217,20 @@ export function ReportPage() {
             </span>
           </div>
 
-          <h1 className="mt-5 text-4xl font-bold tracking-[-0.045em] text-white sm:text-6xl">
+          <motion.h1 variants={cardVariants} className="mt-5 text-4xl font-bold tracking-[-0.045em] text-white sm:text-6xl">
             AI Spend Intelligence Report
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-white/42">
+          </motion.h1>
+          <motion.p variants={cardVariants} className="mt-3 max-w-2xl text-base text-white/42">
             Executive view of tooling efficiency, savings exposure, and optimization direction.
-          </p>
+          </motion.p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <motion.button
               type="button"
               onClick={handleDownloadPdf}
               disabled={isExporting}
-              whileHover={{ scale: 1.01, y: -1 }}
-              whileTap={{ scale: 0.99 }}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-emerald-500 px-5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-all hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+              {...actionMotion}
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500 px-5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-all hover:border-emerald-400/35 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ArrowDown size={14} />
               {isExporting ? "Preparing PDF..." : "Download PDF"}
@@ -195,7 +239,7 @@ export function ReportPage() {
           </div>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-emerald-500/16 bg-emerald-500/[0.05] p-4 sm:col-span-2">
+            <motion.div custom={0.04} variants={cardVariants} className="rounded-xl border border-emerald-500/16 bg-emerald-500/[0.05] p-4 sm:col-span-2">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Monthly savings</p>
               <p className="mt-2 text-5xl font-semibold tracking-[-0.03em] text-emerald-300">
                 {hasSavings ? (
@@ -207,28 +251,39 @@ export function ReportPage() {
                 )}
               </p>
               <p className="mt-1 text-[11px] text-emerald-200/70">{formatCurrency(data.totalYearlySavings)} annualized</p>
-            </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
+            </motion.div>
+            <motion.div custom={0.08} variants={cardVariants} className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Optimization score</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white/86">{optimizationScore}%</p>
-            </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
+            </motion.div>
+            <motion.div custom={0.12} variants={cardVariants} className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Confidence</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white/86">{confidence}%</p>
-            </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
+            </motion.div>
+            <motion.div custom={0.16} variants={cardVariants} className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Tools analyzed</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white/86">{toolsAnalyzed}</p>
-            </div>
-            <div className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
+            </motion.div>
+            <motion.div custom={0.2} variants={cardVariants} className="rounded-xl border border-white/[0.08] bg-black/42 p-4">
               <p className="text-[10px] uppercase tracking-[0.17em] text-white/28">Risk</p>
               <p className="mt-2 text-2xl font-semibold capitalize tracking-tight text-white/86">{risk}</p>
-            </div>
+            </motion.div>
           </div>
-        </header>
+        </motion.header>
 
-        <section className="mt-10 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-2xl border border-white/[0.08] bg-black/45 p-6">
+        <motion.section
+          variants={sectionVariants}
+          className="mt-10 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]"
+        >
+            <motion.div
+              whileHover={{
+                y: -2,
+                borderColor: "rgba(16,185,129,0.22)",
+                boxShadow: "0 22px 48px -34px rgba(16,185,129,0.36)",
+              }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="rounded-2xl border border-white/[0.08] bg-black/45 p-6"
+            >
             <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/45">Recommendations</p>
             {primaryRecommendation && (
               <div className="mt-4 rounded-xl border border-emerald-500/24 bg-emerald-500/[0.08] p-4">
@@ -241,14 +296,19 @@ export function ReportPage() {
               {sortedRecommendations.map((rec, i) => {
                 const config = typeConfig[rec.type] || typeConfig["already-optimal"];
                 const Icon = config.icon;
-                return (
-                  <motion.div
-                    key={`${rec.toolId}-${i}`}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 + i * 0.04, duration: 0.32 }}
-                    className="rounded-xl border border-white/[0.08] bg-white/[0.01] p-4"
-                  >
+                  return (
+                    <motion.div
+                      key={`${rec.toolId}-${i}`}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 + i * 0.04, duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                      whileHover={{
+                        y: -2,
+                        borderColor: "rgba(16,185,129,0.18)",
+                        boxShadow: "0 18px 34px -28px rgba(0,0,0,0.7)",
+                      }}
+                      className="rounded-xl border border-white/[0.08] bg-white/[0.01] p-4"
+                    >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-sm font-semibold capitalize text-white/82">{rec.toolId.replace("-", " ")}</p>
                       <span className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.14em] ${config.color}`}>
@@ -265,10 +325,19 @@ export function ReportPage() {
                 );
               })}
             </div>
-          </div>
+          </motion.div>
 
           <div className="space-y-5">
-            <div className="rounded-2xl border border-white/[0.08] bg-black/45 p-6">
+            <motion.div
+              variants={cardVariants}
+              whileHover={{
+                y: -2,
+                borderColor: "rgba(255,255,255,0.12)",
+                boxShadow: "0 18px 40px -30px rgba(0,0,0,0.8)",
+              }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="rounded-2xl border border-white/[0.08] bg-black/45 p-6"
+            >
               <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/45">AI analyst briefing</p>
               <ul className="mt-3 space-y-2 text-sm text-white/58">
                 <li>• Key finding: {primaryRecommendation?.recommendedAction || "No high-impact changes detected"}</li>
@@ -276,83 +345,101 @@ export function ReportPage() {
                 <li>• Confidence: {confidence}% evidence-backed recommendation quality</li>
                 <li>• Model summary: {data.summary}</li>
               </ul>
-            </div>
+            </motion.div>
 
-          <div className="rounded-2xl border border-white/[0.08] bg-black/45 p-6">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/45">Share</p>
-            <p className="mt-3 text-sm text-white/48">
-              This public report excludes all identifying details and is safe for stakeholder sharing.
-            </p>
-            <div className="mt-4 rounded-xl border border-emerald-500/18 bg-emerald-500/[0.05] px-4 py-3 text-[11px] text-emerald-200/85">
-              Privacy-safe intelligence report
-            </div>
+            <motion.div
+              variants={cardVariants}
+              whileHover={{
+                y: -2,
+                borderColor: "rgba(255,255,255,0.12)",
+                boxShadow: "0 18px 40px -30px rgba(0,0,0,0.8)",
+              }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="rounded-2xl border border-white/[0.08] bg-black/45 p-6"
+            >
+              <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/45">Share</p>
+              <p className="mt-3 text-sm text-white/48">
+                This public report excludes all identifying details and is safe for stakeholder sharing.
+              </p>
+              <div className="mt-4 rounded-xl border border-emerald-500/18 bg-emerald-500/[0.05] px-4 py-3 text-[11px] text-emerald-200/85">
+                Privacy-safe intelligence report
+              </div>
+            </motion.div>
           </div>
-        </div>
-      </section>
+        </motion.section>
 
-      <section className="mt-5 grid gap-5 xl:grid-cols-[1fr_1fr]">
+        <motion.section
+          variants={sectionVariants}
+          className="mt-5 grid gap-5 xl:grid-cols-[1fr_1fr]"
+        >
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          whileHover={{
+            y: -2,
+            borderColor: "rgba(16,185,129,0.16)",
+            boxShadow: "0 20px 40px -30px rgba(16,185,129,0.28)",
+          }}
           className="rounded-2xl border border-white/[0.08] bg-black/45 p-6"
         >
           <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/46">Widget link</p>
-          <p className="mt-3 text-sm text-white/50">
-            Share a compact public preview or open the widget directly.
-          </p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Link
+            <MotionLink
               to={`/widget/${data.publicId}`}
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.08] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-200 transition-all hover:bg-emerald-500/[0.14]"
+              {...actionMotion}
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.08] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-200 transition-all hover:border-emerald-400/30 hover:bg-emerald-500/[0.14]"
             >
               Open widget
               <ExternalLink size={14} />
-            </Link>
-            <motion.button
-              type="button"
-              onClick={handleCopyWidget}
-              whileHover={{ scale: 1.01, y: -1 }}
-              whileTap={{ scale: 0.99 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.02] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-white/58 transition-all hover:border-emerald-500/30 hover:bg-emerald-500/[0.06] hover:text-emerald-200"
-            >
-              <Copy size={13} />
-              {copiedWidget ? "Embed code copied" : "Copy embed code"}
-            </motion.button>
+            </MotionLink>
           </div>
-          <p className="mt-4 text-[11px] text-white/28">The embed snippet is copied to your clipboard.</p>
+          <p className="mt-4 text-[11px] text-white/28">Share a compact public preview directly with stakeholders.</p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.62, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, scale: 0.985, y: 12 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          whileHover={{
+            y: -2,
+            borderColor: "rgba(16,185,129,0.16)",
+            boxShadow: "0 20px 40px -30px rgba(16,185,129,0.28)",
+          }}
           className="rounded-2xl border border-white/[0.08] bg-black/45 p-6"
         >
           <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/46">Widget preview</p>
           <p className="mt-3 text-sm text-white/50">
             This is the compact layout that clients can embed in docs, landing pages, or internal dashboards.
           </p>
-          <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-black/40 p-2">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.985 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-4 overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-black/40 p-2"
+          >
             <div className="pointer-events-none scale-[0.96] origin-top-left">
               <EmbedWidget report={data} />
             </div>
-          </div>
+          </motion.div>
         </motion.div>
-      </section>
+      </motion.section>
 
-        <footer className="mt-12 rounded-2xl border border-white/[0.08] bg-black/45 p-8 text-center">
+        <motion.footer
+          variants={sectionVariants}
+          className="mt-12 rounded-2xl border border-white/[0.08] bg-black/45 p-8 text-center"
+        >
           <p className="text-sm font-semibold text-white/66">Run your own audit in under 60 seconds</p>
           <p className="mt-2 text-[12px] text-white/34">Get a full breakdown, share link, and optimization strategy.</p>
-          <Link
+          <MotionLink
             to="/audit"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-8 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-black transition-all hover:bg-emerald-400"
+            {...actionMotion}
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500 px-8 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-black transition-all hover:border-emerald-400/35 hover:bg-emerald-400"
           >
             Run your audit
             <ExternalLink size={14} />
-          </Link>
-        </footer>
-      </div>
-    </div>
+          </MotionLink>
+        </motion.footer>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -338,9 +338,10 @@ function analyzeCopilot(tool: ToolEntry, input: AuditInput): Recommendation[] {
 function analyzeClaude(tool: ToolEntry, input: AuditInput): Recommendation[] {
   const recs: Recommendation[] = [];
 
-  if (tool.plan === "team" && tool.seats <= 2) {
+  if (tool.plan === "team" && tool.monthlySpend / Math.max(tool.seats, 1) > 20) {
+    const seatCost = tool.monthlySpend / Math.max(tool.seats, 1);
     recs.push(
-      downgrade(tool, "Switch to Pro at $20/month per user", "Team ($30/user/month) adds centralized billing. For 2 or fewer users, Pro covers the same model access and conversation length.", 10)
+      downgrade(tool, "Switch to Pro at $20/user/month", "Team ($30/user/month) adds centralized billing. For smaller teams or teams with light usage, Pro covers the same model access at a lower per-user cost.", seatCost - 20)
     );
   } else if (tool.plan === "api-direct" && tool.monthlySpend > 200) {
     recs.push(
@@ -383,8 +384,8 @@ function analyzeChatGPT(tool: ToolEntry, input: AuditInput): Recommendation[] {
   const recs: Recommendation[] = [];
   const seatCost = tool.monthlySpend / Math.max(tool.seats, 1);
 
-  if (tool.plan === "enterprise" && tool.seats <= 10) {
-    recs.push(downgrade(tool, "Switch to Team plan at $30/user/month", "Enterprise (~$60/user/month) adds SAML SSO. For under 10 users, Team covers most needs at half the cost.", seatCost - 30));
+  if (tool.plan === "enterprise" && seatCost > 30) {
+    recs.push(downgrade(tool, "Switch to Team plan at $30/user/month", "Enterprise adds SAML SSO and dedicated workspace that many teams don't fully use. Team plan provides the same core features at $30/user/month.", seatCost - 30));
   } else if (tool.plan === "api-direct" && tool.monthlySpend > 200) {
     recs.push(creditOptimization(tool, "Purchase OpenAI API credits through Credex for discounted rates", "At $200+/month API spend, prepaid credits can reduce costs by 15-30%.", Math.round(tool.monthlySpend * 0.15)));
   } else {
@@ -459,8 +460,8 @@ function analyzeWindsurf(tool: ToolEntry, input: AuditInput): Recommendation[] {
   const recs: Recommendation[] = [];
   const seatCost = tool.monthlySpend / Math.max(tool.seats, 1);
 
-  if (tool.plan === "enterprise" && tool.seats <= 5) {
-    recs.push(downgrade(tool, "Switch to Teams plan instead of Enterprise", "Enterprise adds dedicated support. For under 5 users, Teams covers all core features.", seatCost - 35));
+  if (tool.plan === "enterprise" && seatCost > 35) {
+    recs.push(downgrade(tool, "Switch to Teams plan instead of Enterprise", "Enterprise adds dedicated support. Teams covers all core features for most users at $35/user/month.", seatCost - 35));
   } else if (tool.plan === "pro" && tool.seats === 1 && tool.monthlySpend > 15) {
     recs.push({
       type: "plan-mismatch",
