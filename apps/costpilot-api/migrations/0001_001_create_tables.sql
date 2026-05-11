@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS audits (
   monthly_savings REAL NOT NULL DEFAULT 0,
   yearly_savings REAL NOT NULL DEFAULT 0,
   summary TEXT NOT NULL DEFAULT '',
+  summary_source TEXT NOT NULL DEFAULT 'fallback',
   created_at TEXT NOT NULL
 );
 

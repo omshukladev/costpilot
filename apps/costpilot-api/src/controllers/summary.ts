@@ -2,13 +2,18 @@ import type { AuditInput, Recommendation } from "@costpilot/shared";
 
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 
+export interface SummaryResult {
+  text: string;
+  source: "deepseek" | "fallback";
+}
+
 export async function generateSummary(
   apiKey: string | undefined,
   input: AuditInput,
   recommendations: Recommendation[],
   totalMonthlySavings: number,
   totalYearlySavings: number
-): Promise<string> {
+): Promise<SummaryResult> {
   if (!apiKey) {
     return buildFallback(input, recommendations, totalMonthlySavings, totalYearlySavings);
   }
@@ -62,7 +67,10 @@ Write in a professional, helpful tone. Do not make up specific numbers. If there
       return buildFallback(input, recommendations, totalMonthlySavings, totalYearlySavings);
     }
 
-    return text;
+    return {
+      text,
+      source: "deepseek",
+    };
   } catch (err) {
     console.error("DeepSeek API error:", err);
     return buildFallback(input, recommendations, totalMonthlySavings, totalYearlySavings);
@@ -74,13 +82,19 @@ function buildFallback(
   recommendations: Recommendation[],
   totalMonthlySavings: number,
   totalYearlySavings: number
-): string {
+): SummaryResult {
   const toolCount = input.tools.length;
   const savingsCount = recommendations.filter((r) => r.monthlySavings > 0).length;
 
   if (totalMonthlySavings > 0) {
-    return `Based on your AI tooling audit, we analyzed ${toolCount} tool(s) across your team. We identified ${savingsCount} area(s) where you could reduce spending, with total potential savings of $${totalMonthlySavings} per month ($${totalYearlySavings} per year). For significant savings, consider purchasing AI credits through Credex at discounted rates.`;
+    return {
+      text: `Based on your AI tooling audit, we analyzed ${toolCount} tool(s) across your team. We identified ${savingsCount} area(s) where you could reduce spending, with total potential savings of $${totalMonthlySavings} per month ($${totalYearlySavings} per year). For significant savings, consider purchasing AI credits through Credex at discounted rates.`,
+      source: "fallback",
+    };
   }
 
-  return `Based on your AI tooling audit, we analyzed ${toolCount} tool(s) across your team. Your current setup appears well-optimized for your team size and usage. No significant savings opportunities were identified at this time.`;
+  return {
+    text: `Based on your AI tooling audit, we analyzed ${toolCount} tool(s) across your team. Your current setup appears well-optimized for your team size and usage. No significant savings opportunities were identified at this time.`,
+    source: "fallback",
+  };
 }

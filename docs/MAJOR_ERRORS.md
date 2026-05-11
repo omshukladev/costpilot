@@ -121,3 +121,19 @@ Example: User with Claude API ($500/mo) + Cursor Business ($80/mo) + ChatGPT Ent
 Added `allTools` parameter to `maybeBuildAlternativeRecommendation()`. The function now extracts the suggested tool name from the action text (e.g., "Cursor Pro" from "Consider Cursor Pro at $20/..."), maps it to toolIds via `altToolMapping`, and skips the suggestion if the user already has any of those tools.
 
 5 callers updated to pass `input.tools`. Added regression test. Total savings for the multi-tool test case dropped from $720/mo to $265/mo (correct).
+
+---
+
+## Unable to Distinguish AI Summary vs Fallback in Logs
+
+### Error
+
+Could not tell whether the app was generating real AI summaries or using the fallback template just by looking at worker logs. The response was always a 200 with a `summary` string, with no way to tell which code path produced it.
+
+### Root Cause
+
+The `generateSummary()` function returned just a string — no source flag. The audit controller saved the summary to D1 without recording whether it came from DeepSeek or the fallback.
+
+### Fix
+
+Updated `generateSummary()` to return `{ text, source }` where `source` is `"deepseek"` or `"fallback"`. Added `summary_source` column to the `audits` table (migration 0002). Persisted the source in D1 alongside the summary. Exposed `summarySource` in audit and report API responses. Now you can check a single API response field to know exactly which path was used.

@@ -551,3 +551,45 @@ Update this file after major development sessions.
 ### Completed (session log sync)
 
 - Refreshed the session log after the audit dropdown layering fix so the latest UI polish is recorded alongside the benchmark and widget work.
+
+### Completed (summary source tracking)
+
+- Updated the audit summary flow to return an explicit source flag (`deepseek` vs `fallback`) instead of inferring the path from the text alone.
+- Logged the summary source in the backend audit handler and persisted it in D1 via a new `summary_source` column.
+- Exposed `summarySource` on audit and report API responses for easier verification during debugging.
+
+### Decisions
+
+- Keep the existing `GEMINI_API_KEY` env var name for now even though the provider is DeepSeek, to avoid unnecessary config churn.
+
+### Problems Encountered
+
+- None.
+
+### Next Steps
+
+- Trigger a fresh audit and confirm the log shows `deepseek` when the API is healthy.
+
+### Completed (summary source verification)
+
+- Added source tracking to the audit summary flow so every response now records whether it came from DeepSeek or the fallback path.
+- Logged the source in the audit handler and exposed it through the audit/report API responses.
+- Updated the backend summary tests to assert the new `{ text, source }` shape.
+
+### Decisions
+
+- Keep the provider env var name unchanged (`GEMINI_API_KEY`) even though the actual model endpoint is DeepSeek.
+
+### Problems Encountered
+
+- Summary tests had to be updated because the return type changed from string to structured data.
+
+### Next Steps
+
+- Use worker logs or the `summarySource` field to confirm future audits are using `deepseek` rather than fallback.
+
+### Completed (Credex surface for high savings + CTA copy fix)
+
+- Added prominent Credex consultation card on results page when savings > $500/mo (gold/amber card with "Book a Credex Consultation" CTA)
+- Fixed low-savings CTA from "Notify me on pricing changes" → "Notify me when new optimizations apply" to match assignment wording
+- Both changes ensure assignment compliance: Credex surfaced for high-value leads, honest messaging for low-savings audits

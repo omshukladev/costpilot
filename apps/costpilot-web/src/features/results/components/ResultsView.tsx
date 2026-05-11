@@ -595,6 +595,30 @@ export function ResultsView() {
           <p className="mt-3 text-[11px] text-white/28">Public links always strip identifying details.</p>
         </motion.div>
 
+        {/* Credex promotion for high savings */}
+        {hasSavings && result.totalMonthlySavings > 500 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: sectionDelay + 0.75, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-emerald-500/5 p-8 text-center"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-400/60">Maximize Your Savings</p>
+            <h3 className="mt-4 text-xl font-bold text-amber-200">Save Even More with Credex</h3>
+            <p className="mt-2 text-sm text-amber-100/50">
+              With over ${result.totalMonthlySavings.toLocaleString()}/month in potential savings, you qualify for discounted AI credits through Credex. Get 15-30% off retail pricing.
+            </p>
+            <a
+              href="https://credex.rocks"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-amber-500 px-8 text-sm font-bold text-black transition-all hover:bg-amber-400"
+            >
+              Book a Credex Consultation
+            </a>
+          </motion.div>
+        )}
+
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: sectionDelay + 0.8, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}>
           {!showLeadCapture ? (
             <motion.div
@@ -605,7 +629,7 @@ export function ResultsView() {
                 onClick={() => setShowLeadCapture(true)}
                 className="rounded-full border border-emerald-500/35 px-7 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-200 transition-all hover:bg-emerald-500/[0.15]"
               >
-                {hasSavings ? "Activate savings watchlist" : "Notify me on pricing changes"}
+                {hasSavings ? "Activate savings watchlist" : "Notify me when new optimizations apply"}
               </button>
             </motion.div>
           ) : (

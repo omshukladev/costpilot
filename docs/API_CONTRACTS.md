@@ -38,6 +38,7 @@
   "totalMonthlySavings": 40,
   "totalYearlySavings": 480,
   "summary": "AI-generated or fallback text...",
+  "summarySource": "deepseek",
   "createdAt": "2026-05-08T00:00:00.000Z"
 }
 ```
@@ -92,6 +93,7 @@
   "totalMonthlySavings": 0,
   "totalYearlySavings": 0,
   "summary": "...",
+  "summarySource": "fallback",
   "createdAt": "2026-05-08T00:00:00.000Z"
 }
 ```

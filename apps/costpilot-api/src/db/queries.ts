@@ -10,6 +10,7 @@ export interface AuditRow {
   monthly_savings: number;
   yearly_savings: number;
   summary: string;
+  summary_source: string;
   created_at: string;
 }
 
@@ -23,13 +24,14 @@ export async function insertAudit(
     monthlySavings: number;
     yearlySavings: number;
     summary: string;
+    summarySource: string;
     createdAt: string;
   }
 ) {
   await db
     .prepare(
-      `INSERT INTO audits (id, public_id, tools_json, recommendations_json, monthly_savings, yearly_savings, summary, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO audits (id, public_id, tools_json, recommendations_json, monthly_savings, yearly_savings, summary, summary_source, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .bind(
       audit.id,
@@ -39,6 +41,7 @@ export async function insertAudit(
       audit.monthlySavings,
       audit.yearlySavings,
       audit.summary,
+      audit.summarySource,
       audit.createdAt
     )
     .run();

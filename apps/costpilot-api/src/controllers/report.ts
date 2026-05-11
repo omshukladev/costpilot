@@ -16,6 +16,7 @@ export async function get(c: any) {
       totalMonthlySavings: audit.monthly_savings,
       totalYearlySavings: audit.yearly_savings,
       summary: audit.summary,
+      summarySource: audit.summary_source,
       createdAt: audit.created_at,
     });
   } catch (err) {

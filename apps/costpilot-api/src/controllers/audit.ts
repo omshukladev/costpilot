@@ -12,13 +12,14 @@ export async function create(c: any) {
     const id = nanoid();
     const publicId = nanoid(12);
 
-    const summary = await generateSummary(
+    const summaryResult = await generateSummary(
       c.env.GEMINI_API_KEY,
       input,
       result.recommendations,
       result.totalMonthlySavings,
       result.totalYearlySavings
     );
+    console.info("audit summary source", { id, publicId, source: summaryResult.source });
 
     await insertAudit(c.env.costpilot_db, {
       id,
@@ -27,7 +28,8 @@ export async function create(c: any) {
       recommendations: result.recommendations,
       monthlySavings: result.totalMonthlySavings,
       yearlySavings: result.totalYearlySavings,
-      summary,
+      summary: summaryResult.text,
+      summarySource: summaryResult.source,
       createdAt: result.createdAt,
     });
 
@@ -38,7 +40,8 @@ export async function create(c: any) {
       recommendations: result.recommendations,
       totalMonthlySavings: result.totalMonthlySavings,
       totalYearlySavings: result.totalYearlySavings,
-      summary,
+      summary: summaryResult.text,
+      summarySource: summaryResult.source,
       createdAt: result.createdAt,
     });
   } catch (err) {

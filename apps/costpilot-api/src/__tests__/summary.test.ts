@@ -14,13 +14,15 @@ function makeInput(overrides?: Partial<AuditInput>): AuditInput {
 describe("summary fallback", () => {
   it("returns fallback when apiKey is undefined", async () => {
     const result = await generateSummary(undefined, makeInput(), [], 0, 0);
-    expect(result).toContain("well-optimized");
-    expect(result).toContain("1 tool");
+    expect(result.text).toContain("well-optimized");
+    expect(result.text).toContain("1 tool");
+    expect(result.source).toBe("fallback");
   });
 
   it("returns fallback when apiKey is empty", async () => {
     const result = await generateSummary("", makeInput(), [], 0, 0);
-    expect(result).toContain("well-optimized");
+    expect(result.text).toContain("well-optimized");
+    expect(result.source).toBe("fallback");
   });
 
   it("fallback mentions savings when there are savings", async () => {
@@ -38,9 +40,10 @@ describe("summary fallback", () => {
     ];
 
     const result = await generateSummary(undefined, makeInput(), recs, 40, 480);
-    expect(result).toContain("$40");
-    expect(result).toContain("$480");
-    expect(result).toContain("Credex");
+    expect(result.text).toContain("$40");
+    expect(result.text).toContain("$480");
+    expect(result.text).toContain("Credex");
+    expect(result.source).toBe("fallback");
   });
 
   it("fallback says optimized when no savings", async () => {
@@ -63,8 +66,9 @@ describe("summary fallback", () => {
       0
     );
 
-    expect(result).toContain("well-optimized");
-    expect(result).not.toContain("Credex");
+    expect(result.text).toContain("well-optimized");
+    expect(result.text).not.toContain("Credex");
+    expect(result.source).toBe("fallback");
   });
 
   it("fallback includes tool count", async () => {
@@ -76,6 +80,7 @@ describe("summary fallback", () => {
     });
 
     const result = await generateSummary(undefined, input, [], 0, 0);
-    expect(result).toContain("2 tool");
+    expect(result.text).toContain("2 tool");
+    expect(result.source).toBe("fallback");
   });
 });
