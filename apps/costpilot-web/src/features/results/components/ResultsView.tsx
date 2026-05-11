@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Share2,
   ArrowLeft,
+  BarChart3,
   CheckCircle,
   ArrowDown,
   ArrowRight,
@@ -18,6 +19,8 @@ import { AnimatedCounter } from "@/shared/components/animations/AnimatedCounter"
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 import { useAuditStore } from "../../audit/store/audit.store";
 import { LeadCapture } from "./LeadCapture";
+import { BenchmarkSection } from "./BenchmarkSection";
+import { buildBenchmarkProfile } from "../utils/benchmark";
 import type { Recommendation, RecommendationType } from "@costpilot/shared";
 
 const typeConfig: Record<RecommendationType, { icon: typeof CheckCircle; label: string; color: string }> = {
@@ -65,6 +68,7 @@ export function ResultsView() {
   const reset = useAuditStore((s) => s.reset);
   const [showLeadCapture, setShowLeadCapture] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showBenchmark, setShowBenchmark] = useState(false);
 
   if (!result) return null;
 
@@ -103,6 +107,16 @@ export function ResultsView() {
   const currentSpendPct = 100;
   const optimizedSpendPct = Math.max(8, Math.round((optimizedMonthlySpend / spendMixMax) * 100));
   const overlapPct = Math.max(6, Math.min(78, overlapRatio));
+  const benchmarkProfile = buildBenchmarkProfile({
+    teamSize: result.input.teamSize,
+    toolCount: toolsAnalyzed,
+    totalMonthlySpend: currentMonthlySpend,
+    totalMonthlySavings: result.totalMonthlySavings,
+    overlapExposure,
+    assistantSpend,
+    recommendations: result.recommendations,
+    useCase: result.input.useCase,
+  });
 
   const spendMix = [...result.input.tools]
     .sort((a, b) => b.monthlySpend - a.monthlySpend)
@@ -487,6 +501,21 @@ export function ResultsView() {
         </motion.div>
       </motion.section>
 
+      <AnimatePresence mode="wait">
+        {showBenchmark && (
+          <motion.div
+            key="benchmark-section"
+            initial={{ opacity: 0, y: 12, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: 10, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <BenchmarkSection profile={benchmarkProfile} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {informational.length > 0 && (
         <motion.section
           initial={{ opacity: 0, y: 16 }}
@@ -535,11 +564,11 @@ export function ResultsView() {
             }
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/[0.14] bg-white/[0.02] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-white/58 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/[0.08] hover:text-emerald-200"
-          >
-            <Share2 size={14} />
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
+            >
+              <Share2 size={14} />
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={copied ? "copied" : "copy"}
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
@@ -548,6 +577,20 @@ export function ResultsView() {
                 {copied ? "Copied" : "Copy public link"}
               </motion.span>
             </AnimatePresence>
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={() => setShowBenchmark((value) => !value)}
+            whileHover={{ scale: 1.01, y: -1 }}
+            whileTap={{ scale: 0.99 }}
+            className={`mt-3 inline-flex items-center gap-2 rounded-full border px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] transition-all ${
+              showBenchmark
+                ? "border-emerald-400/26 bg-emerald-500/[0.12] text-emerald-200"
+                : "border-white/[0.12] bg-white/[0.02] text-white/58 hover:border-emerald-500/30 hover:bg-emerald-500/[0.06] hover:text-emerald-200"
+            }`}
+          >
+            <BarChart3 size={14} />
+            {showBenchmark ? "Hide benchmark" : "Run benchmark"}
           </motion.button>
           <p className="mt-3 text-[11px] text-white/28">Public links always strip identifying details.</p>
         </motion.div>

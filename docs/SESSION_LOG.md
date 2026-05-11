@@ -487,3 +487,67 @@ Update this file after major development sessions.
 - Built a two-page executive PDF that includes the hero metrics, primary recommendation, spend allocation, secondary opportunities, and AI briefing.
 - Added a `Download PDF` CTA on the report page and wired a blob download flow.
 - Lazy-loaded the PDF renderer so the main app bundle stays lean and the export code only loads on demand.
+
+### Completed (embeddable widget)
+
+- Added a public widget route at `/widget/:publicId` that renders a compact read-only preview of the report.
+- Added an embed code section on the public report page with a copyable iframe snippet.
+- Reused the existing report API and kept the widget public-safe with a lightweight premium layout.
+
+### Completed (widget UX polish)
+
+- Removed the visible iframe code block from the report page so the embed action stays lightweight and copy-first.
+- Kept the widget sharing surface focused on the copy button and direct open action.
+
+### Completed (benchmark mode)
+
+- Added a deterministic, frontend-only benchmark mode to `ResultsView` with a toggle button and animated reveal.
+- Built the benchmark profile from existing audit inputs: team size, spend, tool count, overlap exposure, seat efficiency, and savings opportunity.
+- Kept the output rule-based and repeatable so the same audit input always yields the same peer comparison.
+
+---
+
+## 2026-05-11
+
+### Completed
+
+- Confirmed the public report page was exposing the iframe embed snippet as visible text.
+- Removed the rendered `<pre>` code block from the widget link section so only the copy/open actions remain visible.
+- Updated the session log to reflect the latest widget UX polish and report-page cleanup.
+- Added benchmark mode to the results page as a deterministic peer-comparison reveal.
+
+### Decisions
+
+- Keep the embed snippet copy-only in the UI to reduce visual clutter and preserve the premium report layout.
+- Keep benchmark mode frontend-only and rule-based so it stays believable without backend cohort data.
+
+### Problems Encountered
+
+- None.
+- None.
+
+### Next Steps
+
+- Continue with the remaining submission docs when resumed.
+
+### Completed (audit dropdown layering fix)
+
+- Upgraded the premium select primitive to render menus in a portal at `document.body`, preventing clipping inside audit cards and sticky containers.
+- Added fixed-position collision-aware placement so dropdowns flip above when space is tight and stay within viewport bounds.
+- Standardized dropdown depth, sizing, and transition timing so tool, plan, and use-case menus behave consistently.
+
+### Decisions
+
+- Keep the audit page layout unchanged and fix only the select/dropdown layer behavior.
+
+### Problems Encountered
+
+- None.
+
+### Next Steps
+
+- Continue with remaining polish only if another UI regression appears.
+
+### Completed (session log sync)
+
+- Refreshed the session log after the audit dropdown layering fix so the latest UI polish is recorded alongside the benchmark and widget work.

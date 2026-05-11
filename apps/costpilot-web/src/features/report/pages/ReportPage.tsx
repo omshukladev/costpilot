@@ -10,11 +10,13 @@ import {
   RefreshCw,
   ExternalLink,
   ShieldCheck,
+  Copy,
 } from "lucide-react";
 import { useReport } from "../hooks/useReport";
 import { AnimatedCounter } from "@/shared/components/animations/AnimatedCounter";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 import type { RecommendationType } from "@costpilot/shared";
+import { EmbedWidget } from "../components/EmbedWidget";
 
 const typeConfig: Record<RecommendationType, { icon: typeof CheckCircle; label: string; color: string }> = {
   downgrade: { icon: ArrowDown, label: "Downgrade", color: "text-emerald-300" },
@@ -37,6 +39,8 @@ export function ReportPage() {
   const { publicId } = useParams<{ publicId: string }>();
   const { data, isLoading, isError } = useReport(publicId || "");
   const [isExporting, setIsExporting] = useState(false);
+  const [isCopyingWidget, setIsCopyingWidget] = useState(false);
+  const [copiedWidget, setCopiedWidget] = useState(false);
 
   useEffect(() => {
     if (!data) return;
@@ -82,6 +86,20 @@ export function ReportPage() {
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleCopyWidget = async () => {
+    if (!data || isCopyingWidget) return;
+
+    setIsCopyingWidget(true);
+    try {
+      const embedCode = `<iframe src="${window.location.origin}/widget/${data.publicId}" width="100%" height="420" style="border:0;border-radius:20px;overflow:hidden;background:#000;" loading="lazy"></iframe>`;
+      await navigator.clipboard.writeText(embedCode);
+      setCopiedWidget(true);
+      setTimeout(() => setCopiedWidget(false), 1800);
+    } finally {
+      setIsCopyingWidget(false);
     }
   };
 
@@ -260,17 +278,68 @@ export function ReportPage() {
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-white/[0.08] bg-black/45 p-6">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/45">Share</p>
-              <p className="mt-3 text-sm text-white/48">
-                This public report excludes all identifying details and is safe for stakeholder sharing.
-              </p>
-              <div className="mt-4 rounded-xl border border-emerald-500/18 bg-emerald-500/[0.05] px-4 py-3 text-[11px] text-emerald-200/85">
-                Privacy-safe intelligence report
-              </div>
+          <div className="rounded-2xl border border-white/[0.08] bg-black/45 p-6">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/45">Share</p>
+            <p className="mt-3 text-sm text-white/48">
+              This public report excludes all identifying details and is safe for stakeholder sharing.
+            </p>
+            <div className="mt-4 rounded-xl border border-emerald-500/18 bg-emerald-500/[0.05] px-4 py-3 text-[11px] text-emerald-200/85">
+              Privacy-safe intelligence report
             </div>
           </div>
-        </section>
+        </div>
+      </section>
+
+      <section className="mt-5 grid gap-5 xl:grid-cols-[1fr_1fr]">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-2xl border border-white/[0.08] bg-black/45 p-6"
+        >
+          <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/46">Widget link</p>
+          <p className="mt-3 text-sm text-white/50">
+            Share a compact public preview or open the widget directly.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              to={`/widget/${data.publicId}`}
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.08] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-200 transition-all hover:bg-emerald-500/[0.14]"
+            >
+              Open widget
+              <ExternalLink size={14} />
+            </Link>
+            <motion.button
+              type="button"
+              onClick={handleCopyWidget}
+              whileHover={{ scale: 1.01, y: -1 }}
+              whileTap={{ scale: 0.99 }}
+              className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.02] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-white/58 transition-all hover:border-emerald-500/30 hover:bg-emerald-500/[0.06] hover:text-emerald-200"
+            >
+              <Copy size={13} />
+              {copiedWidget ? "Embed code copied" : "Copy embed code"}
+            </motion.button>
+          </div>
+          <p className="mt-4 text-[11px] text-white/28">The embed snippet is copied to your clipboard.</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.62, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-2xl border border-white/[0.08] bg-black/45 p-6"
+        >
+          <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400/46">Widget preview</p>
+          <p className="mt-3 text-sm text-white/50">
+            This is the compact layout that clients can embed in docs, landing pages, or internal dashboards.
+          </p>
+          <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-black/40 p-2">
+            <div className="pointer-events-none scale-[0.96] origin-top-left">
+              <EmbedWidget report={data} />
+            </div>
+          </div>
+        </motion.div>
+      </section>
 
         <footer className="mt-12 rounded-2xl border border-white/[0.08] bg-black/45 p-8 text-center">
           <p className="text-sm font-semibold text-white/66">Run your own audit in under 60 seconds</p>
