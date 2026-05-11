@@ -480,3 +480,10 @@ Update this file after major development sessions.
 
 - Increased the global cursor spotlight intensity slightly so the hover light feels more present on the results page.
 - Expanded the spotlight size and softened the blur bloom to keep it premium instead of neon-heavy.
+
+### Completed (PDF export)
+
+- Added a client-side PDF export for the public report page using `@react-pdf/renderer`.
+- Built a two-page executive PDF that includes the hero metrics, primary recommendation, spend allocation, secondary opportunities, and AI briefing.
+- Added a `Download PDF` CTA on the report page and wired a blob download flow.
+- Lazy-loaded the PDF renderer so the main app bundle stays lean and the export code only loads on demand.

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -36,6 +36,7 @@ function deriveRiskLevel(savings: number, spend: number) {
 export function ReportPage() {
   const { publicId } = useParams<{ publicId: string }>();
   const { data, isLoading, isError } = useReport(publicId || "");
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     if (!data) return;
@@ -60,6 +61,29 @@ export function ReportPage() {
     setMeta("twitter:title", document.title);
     setMeta("twitter:description", data.summary?.slice(0, 200) || "AI tooling spend audit by CostPilot");
   }, [data]);
+
+  const handleDownloadPdf = async () => {
+    if (!data || isExporting) return;
+
+    setIsExporting(true);
+    try {
+      const [{ pdf }, { ReportPdfDocument }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("../components/ReportPdfDocument"),
+      ]);
+      const blob = await pdf(<ReportPdfDocument report={data} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `costpilot-report-${data.publicId.slice(0, 8)}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -136,6 +160,21 @@ export function ReportPage() {
           <p className="mt-3 max-w-2xl text-base text-white/42">
             Executive view of tooling efficiency, savings exposure, and optimization direction.
           </p>
+
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <motion.button
+              type="button"
+              onClick={handleDownloadPdf}
+              disabled={isExporting}
+              whileHover={{ scale: 1.01, y: -1 }}
+              whileTap={{ scale: 0.99 }}
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-emerald-500 px-5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-all hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <ArrowDown size={14} />
+              {isExporting ? "Preparing PDF..." : "Download PDF"}
+            </motion.button>
+            <p className="text-[11px] text-white/32">Executive-ready 2-page export</p>
+          </div>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border border-emerald-500/16 bg-emerald-500/[0.05] p-4 sm:col-span-2">
