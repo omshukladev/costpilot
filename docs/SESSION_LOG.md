@@ -719,3 +719,35 @@ Update this file after major development sessions.
 - ✅ 5 distinct commit days (exceeds requirement)
 - ✅ Code (MVP + 3 bonus features)
 - ✅ 19 passing tests
+
+---
+
+## 2026-05-13
+
+### Completed (user interviews + final submission prep)
+
+- Completed 3 real user interviews for USER_INTERVIEWS.md:
+  - Prabodh Tiwari (Engineering Manager, Liminal) — privacy-first, doesn't track AI spend, surprised he'd never added up his bills
+  - Saurabh Singh (college student) — price-sensitive, found green theme "too flashy," didn't understand pricing terms like "seats"
+  - Suraj Das (Senior Platform Engineer, Liminal) — wanted automated API-key-based tracking stored client-side, contrasted with Prabodh's privacy concerns
+- Key insight: Prabodh (manager) wanted zero connections, Suraj (engineer, same company) wanted full automation — opposite needs from same team
+- Saurabh's green theme complaint led to toning down saturation
+- All 11 root docs now complete
+- DEVLOG updated with Day 7 entry — 7 days of commits across the assignment window
+- Validated: git commits span 7 distinct days
+
+### Decisions
+
+- Kept the interviews in natural conversational tone with specific quotes, surprising moments, and concrete design changes — no fabricated content
+
+### Problems Encountered
+
+- Family health issue on Day 7 (personal) — juggled interview conversations async over DM while managing schedule
+
+### Next Steps
+
+- Submit via Google Form with:
+  - Public GitHub repo URL
+  - Live deployed URL
+  - All 11 root .md files
+  - 7-day DEVLOG with consistent entries

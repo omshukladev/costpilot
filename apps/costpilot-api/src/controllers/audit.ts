@@ -19,7 +19,7 @@ export async function create(c: any) {
       result.totalMonthlySavings,
       result.totalYearlySavings
     );
-    console.info("audit summary source", { id, publicId, source: summaryResult.source });
+    console.info("audit summary", { id, publicId, source: summaryResult.source, model: "deepseek-v4-flash" });
 
     await insertAudit(c.env.costpilot_db, {
       id,
