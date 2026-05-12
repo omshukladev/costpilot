@@ -3,7 +3,8 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { FloatingElement } from "../../../shared/components/animations/FloatingElement";
 import { Spotlight } from "../../../shared/components/animations/Spotlight";
 import { ShootingStars } from "../../../shared/components/animations/ShootingStars";
-import { useRef } from "react";
+import { WidgetPreviewModal } from "../../../shared/components/WidgetPreviewModal";
+import { useRef, useState } from "react";
 
 const floatingBadges = [
   { text: "Detected -$240/mo", x: "10%", y: "20%", delay: 0 },
@@ -14,6 +15,7 @@ const floatingBadges = [
 
 export function Hero() {
   const ctaRef = useRef<HTMLDivElement>(null);
+  const [isWidgetModalOpen, setIsWidgetModalOpen] = useState(false);
   
   // Magnetic effect for CTA
   const x = useMotionValue(0);
@@ -136,12 +138,12 @@ export function Hero() {
             </motion.div>
           </div>
           
-          <Link
-            to="/#live-demo"
+          <button
+            onClick={() => setIsWidgetModalOpen(true)}
             className="inline-flex h-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] px-12 text-sm font-bold text-white/60 transition-all hover:bg-white/[0.05] hover:text-white hover:border-white/20 backdrop-blur-sm"
           >
             See sample report
-          </Link>
+          </button>
         </motion.div>
 
         <motion.p
@@ -153,6 +155,13 @@ export function Hero() {
           No login required · Results in 60s
         </motion.p>
       </div>
+
+      {/* Widget Preview Modal */}
+      <WidgetPreviewModal
+        isOpen={isWidgetModalOpen}
+        onClose={() => setIsWidgetModalOpen(false)}
+        widgetId="1NpTn446VhZ-"
+      />
     </section>
   );
 }

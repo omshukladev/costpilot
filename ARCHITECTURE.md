@@ -45,7 +45,24 @@ costpilot/
 │   │   └── package.json
 │   │
 │   └── costpilot-web/                  # Frontend — React + Vite + Tailwind
-│       └── src/                        # (frontend not yet built)
+│       ├── src/
+│       │   ├── app/                     # App shell + router
+│       │   │   ├── providers/           # Context providers (Query, Router, Zustand)
+│       │   │   ├── layouts/             # App layout wrapper
+│       │   │   └── router/              # React Router routes
+│       │   │
+│       │   ├── features/                # Feature-first organization
+│       │   │   ├── landing/             # Home page, value prop, CTA
+│       │   │   ├── audit/               # Audit form + input handlers
+│       │   │   ├── results/             # Results display, export, sharing
+│       │   │   ├── public-report/       # Public report view
+│       │   │   ├── widget/              # Embeddable savings widget
+│       │   │   └── benchmark/           # Benchmark mode
+│       │   │
+│       │   ├── components/              # Shared UI components
+│       │   ├── hooks/                   # Custom React hooks
+│       │   ├── store/                   # Zustand state management
+│       │   └── types/                   # Shared TypeScript types
 │
 ├── packages/
 │   └── shared/

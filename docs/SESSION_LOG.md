@@ -666,6 +666,18 @@ Update this file after major development sessions.
   - Key decisions and rationale
 - **README accuracy fix:** Removed false Drizzle ORM reference, corrected to actual raw SQL + prepared statements
 - **Verified submission readiness:** 10/11 required docs complete + accurate
+- **Updated ARCHITECTURE.md:** Added complete frontend folder structure showing feature-first organization (landing, audit, results, public-report, widget, benchmark)
+- **Widget preview modal:** Created WidgetPreviewModal.tsx component with:
+  - Beautiful modal with backdrop blur + smooth animations (Framer Motion)
+  - Embedded iframe showing widget at `/widget/1NpTn446VhZ-`
+  - Close button + click-outside-to-close functionality
+  - Updated Hero.tsx and CTASection.tsx: "See sample report" buttons now open modal instead of linking
+- **Dynamic audit flow:** Made "Continue to full audit flow" button in AuditStarter.tsx dynamic:
+  - Added Zustand store method: `loadFromLanding()`
+  - Button now loads sample data into audit form (3 tools, team size 12, use-case "coding")
+  - Navigates to `/audit` page with pre-populated form data
+  - Users can see full audit flow with sample data pre-filled
+- **Removed unnecessary copy button:** Deleted "Copy embed code" button from widget modal—assignment only requires embeddable widget to exist, not copy-to-clipboard feature
 
 ### Decisions
 

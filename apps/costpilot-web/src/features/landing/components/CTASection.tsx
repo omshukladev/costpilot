@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { FadeIn } from "../../../shared/components/animations/FadeIn";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { WidgetPreviewModal } from "../../../shared/components/WidgetPreviewModal";
+import { useRef, useState } from "react";
 
 export function CTASection() {
   const ctaRef = useRef<HTMLDivElement>(null);
+  const [isWidgetModalOpen, setIsWidgetModalOpen] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
@@ -71,17 +73,24 @@ export function CTASection() {
                     </Link>
                   </motion.div>
                 </div>
-                <Link
-                  to="/#live-demo"
+                <button
+                  onClick={() => setIsWidgetModalOpen(true)}
                   className="inline-flex h-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] px-12 text-sm font-bold text-white/60 transition-all hover:bg-white/[0.05] hover:text-white hover:border-white/20 backdrop-blur-sm"
                 >
                   View sample report
-                </Link>
+                </button>
               </div>
             </div>
           </div>
         </FadeIn>
       </div>
+
+      {/* Widget Preview Modal */}
+      <WidgetPreviewModal
+        isOpen={isWidgetModalOpen}
+        onClose={() => setIsWidgetModalOpen(false)}
+        widgetId="1NpTn446VhZ-"
+      />
     </section>
   );
 }

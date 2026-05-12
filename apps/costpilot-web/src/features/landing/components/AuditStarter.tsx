@@ -2,14 +2,27 @@ import { FadeIn } from "../../../shared/components/animations/FadeIn";
 import { AnimatedCounter } from "../../../shared/components/animations/AnimatedCounter";
 import { HoverGlowCard } from "../../../shared/components/animations/HoverGlowCard";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useAuditStore } from "../../audit/store/audit.store";
+import type { FormToolEntry } from "../../audit/types/audit.types";
 
-const sampleTools = [
-  { name: "Cursor", plan: "Business", spend: "$40/user/mo" },
-  { name: "Claude", plan: "Team", spend: "$30/user/mo" },
-  { name: "ChatGPT", plan: "Team", spend: "$25/user/mo" },
+const sampleTools: FormToolEntry[] = [
+  { toolId: "cursor", plan: "business", monthlySpend: 40, seats: 1 },
+  { toolId: "claude", plan: "team", monthlySpend: 30, seats: 1 },
+  { toolId: "chatgpt", plan: "team", monthlySpend: 25, seats: 1 },
 ];
 
 export function AuditStarter() {
+  const navigate = useNavigate();
+  const loadFromLanding = useAuditStore((s) => s.loadFromLanding);
+
+  const handleContinueToAudit = () => {
+    // Load sample data into the audit form
+    loadFromLanding(sampleTools, 12, "coding");
+    // Navigate to audit page
+    navigate("/audit");
+  };
+
   return (
     <section id="audit-starter" className="relative bg-black px-6 py-40 overflow-hidden">
       {/* Subtle Background Accent */}
@@ -79,17 +92,17 @@ export function AuditStarter() {
                     <div className="mt-10 space-y-4">
                       {sampleTools.map((tool, idx) => (
                         <motion.div
-                          key={tool.name}
+                          key={tool.toolId}
                           initial={{ opacity: 0, x: 20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.6, delay: idx * 0.1 }}
                           className="flex items-center justify-between rounded-2xl border border-white/[0.04] bg-white/[0.02] px-5 py-4 transition-colors hover:bg-white/[0.05]"
                         >
                           <div>
-                            <p className="text-sm font-bold text-white/90">{tool.name}</p>
+                            <p className="text-sm font-bold text-white/90 capitalize">{tool.toolId}</p>
                             <p className="text-[10px] font-medium text-white/20 uppercase tracking-wider mt-0.5">{tool.plan}</p>
                           </div>
-                          <p className="text-xs font-bold text-emerald-400/80 tracking-tight">{tool.spend}</p>
+                          <p className="text-xs font-bold text-emerald-400/80 tracking-tight">${tool.monthlySpend}/mo</p>
                         </motion.div>
                       ))}
                     </div>
@@ -109,6 +122,7 @@ export function AuditStarter() {
                     </div>
 
                     <motion.button
+                      onClick={handleContinueToAudit}
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.98 }}
                       type="button"

@@ -28,6 +28,7 @@ interface AuditStore {
   setResult: (result: AuditResult) => void;
   setIsSubmitting: (v: boolean) => void;
   reset: () => void;
+  loadFromLanding: (tools: FormToolEntry[], teamSize: number, useCase: UseCase) => void;
 }
 
 const initialState = {
@@ -88,6 +89,8 @@ export const useAuditStore = create<AuditStore>()(
       setResult: (result) => set({ result, isSubmitting: false }),
       setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
       reset: () => set({ ...initialState, tools: [emptyTool()] }),
+      loadFromLanding: (tools, teamSize, useCase) =>
+        set({ tools, teamSize, useCase }),
     }),
     {
       name: "costpilot-audit-form",
